@@ -22,6 +22,7 @@
   <link href="<?php echo base_url('assets/src/css/jquery.dataTables.min.css') ?>" rel="stylesheet">
   <link href="<?php echo base_url('assets/src/css/jquery-confirm.min.css') ?>" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <!-- Styles required by this views -->
 
 </head>
@@ -32,9 +33,9 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="<?php echo base_url('dashboard');?>"></a>
-    <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <!-- <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
       <span class="navbar-toggler-icon"></span>
-    </button>
+    </button> -->
 
     <ul class="nav navbar-nav d-md-down-none">
       <li class="nav-item px-3">

@@ -7,11 +7,14 @@
     <form action="" method="post" id="saldo_form" enctype="multipart/form-data" class="form-horizontal">
     <div class="card-body">
         <div class="form-group row">
-          <label class="col-md-1 col-form-label" for="text-input">Username</label>
+          <label for="user_saldo" class="col-md-1 col-form-label" for="text-input">Username</label>
           <div class="col-md-3">
-            <input type="text" id="user_saldo" name="user_saldo" class="form-control" onkeyup="isGroupMaster()">
+            <input type="text" id="user_saldo" name="user_saldo" class="form-control" autocomplete="off">
             <span class="help-block" id="user_saldo_err" style="color:#f44242;">User id bukan group master/salah</span>
             <span class="help-block" id="user_saldo_scs" style="color:#a4de9a;">User id valid</span>
+          </div>
+          <div class="col-md-3">
+            <div id="auto_con_div" onclick="isGroupMaster()"></div>
           </div>
         </div>
 

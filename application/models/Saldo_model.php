@@ -98,4 +98,13 @@ class Saldo_model extends CI_Model{
       return true;
   }
 
+  public function getUsername($match)
+  {
+      $this->db->select('username');
+      $this->db->from('inm_users');
+      $this->db->like('username', $match, 'both');
+      $query = $this->db->get();
+      return $query->result_array();
+  }
+
 }

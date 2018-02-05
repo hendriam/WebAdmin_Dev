@@ -60,6 +60,14 @@ class Saldo extends CI_Controller{
       //$nominal = '19000';
 
       $this->db->trans_start();
+      if($this->saldo_model->getUserByUsername($username)->num_rows() == '')
+      {
+          $output['msg'] = 'failed';
+          $output['print'] = 'Username tidak terdaftar';
+
+          echo json_encode($output);
+          exit();
+      }
       $user_id = $this->saldo_model->getUserByUsername($username)->row()->id;
       $nama_loket = $this->saldo_model->getUserByUsername($username)->row()->nama_user;
       $this->saldo_model->updateSaldo($user_id, $nominal);
@@ -84,7 +92,7 @@ class Saldo extends CI_Controller{
           $nextID = $nowIntDate.'00001';
       }
 
-      
+
       $print['no_kwitansi'] = $nextID;
       $print['username'] = $username;
       $print['nama_loket'] = $nama_loket;
@@ -110,7 +118,7 @@ class Saldo extends CI_Controller{
       if ($this->db->trans_status() === FALSE)
       {
           $output['msg'] = 'failed';
-          $output['print'] = '';
+          $output['print'] = 'Gagal Tambah Saldo';
 
           echo json_encode($output);
       }
@@ -136,6 +144,19 @@ class Saldo extends CI_Controller{
       {
           echo $this->saldo_model->getDepositByNoKwitansi($no_kwitansi);
       }
+
+  }
+
+  public function usernameList()
+  {
+      $match = $this->input->get('term',TRUE);
+      $data = $this->saldo_model->getUsername($match);
+      $output = array();
+      foreach($data as $row)
+      {
+          $output[] = $row['username'];
+      }
+      echo json_encode($output);
   }
 
   // public function pdf()

@@ -9,7 +9,7 @@
     <span><a href="http://coreui.io">CoreUI</a> © 2017 creativeLabs.</span>
     <span class="ml-auto">Powered by <a href="http://coreui.io">CoreUI</a></span>
   </footer>
-
+    <!-- <script src="http://code.jquery.com/jquery-1.10.2.js"></script> -->
     <!-- Bootstrap and necessary plugins -->
     <script src="<?php echo base_url('assets/dist/vendors/js/jquery.min.js') ?>"></script>
     <script src="<?php echo base_url('assets/dist/vendors/js/popper.min.js') ?>"></script>
@@ -24,7 +24,7 @@
     <script src="<?php echo base_url('assets/src/js/jquery-confirm.min.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="<?php echo base_url('assets/src/js/dataTables.colResize.js') ?>"></script>
-
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
 
   <!-- CoreUI main scripts -->
