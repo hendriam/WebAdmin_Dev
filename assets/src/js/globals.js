@@ -31,6 +31,7 @@ var saldo_table = function()
   loketSaldo();
   historyDeposit();
   //rekapDeposit();
+  auto_complete_saldo();
   flatpickrActivation();
 }
 

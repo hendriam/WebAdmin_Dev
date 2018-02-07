@@ -110,7 +110,7 @@ class Saldo extends CI_Controller{
       $print['username'] = $username;
       $print['nama_loket'] = $nama_loket;
       $print['nominal'] = $nominal;
-      $print['terbilang'] = $this->moneyformat->terbilang($nominal);
+      $print['terbilang'] = $this->moneyformat->terbilang($nominal).'Rupiah';
       $print['tanggal'] = nowDate();
 
       $print_out = json_encode($print);
@@ -142,7 +142,7 @@ class Saldo extends CI_Controller{
           $output['username'] = $username;
           $output['nama_loket'] = $nama_loket;
           $output['nominal'] = $nominal;
-          $output['terbilang'] = $this->moneyformat->terbilang($nominal);
+          $output['terbilang'] = $this->moneyformat->terbilang($nominal).'Rupiah';
           $output['tanggal'] = nowDate();
 
           echo json_encode($output);

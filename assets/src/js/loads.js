@@ -201,13 +201,17 @@ var submitSaldoForm = function(event){
 }
 
 $( function() {
-
-    $( "#user_saldo" ).autocomplete({
-      source: base_url+'saldo/usernameList',
-      appendTo: "#auto_con_div"
-    });
-
+  auto_complete_saldo();
 });
+var auto_complete_saldo = function() {
+  $( function() {
+      $( "#user_saldo" ).autocomplete({
+        source: base_url+'saldo/usernameList',
+        appendTo: "#auto_con_div"
+      });
+
+  });
+}
 
 
 
