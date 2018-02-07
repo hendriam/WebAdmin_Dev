@@ -35,6 +35,11 @@ class Saldo extends CI_Controller{
       $this->load->view('saldo/list_history');
   }
 
+  public function rekapHistoryPage()
+  {
+      $this->load->view('saldo/rekap_history');
+  }
+
   public function getSaldoJson()
   {
       //data user by JSON object
@@ -47,6 +52,14 @@ class Saldo extends CI_Controller{
       //data user by JSON object
       header('Content-Type: application/json');
       echo $this->saldo_model->getHistoryDeposit();
+  }
+
+  public function getRekapJson()
+  {
+      // data rekap by JSON object
+      header('Content-Type: application/json');
+      $tgl = $this->input->post('tgl', TRUE);
+      echo $this->saldo_model->getRekapDeposit($tgl);
   }
 
   public function setSaldoLoket()

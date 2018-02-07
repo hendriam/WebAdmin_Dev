@@ -30,6 +30,8 @@ var saldo_table = function()
 {
   loketSaldo();
   historyDeposit();
+  //rekapDeposit();
+  flatpickrActivation();
 }
 
 var admin_page = function()
@@ -48,6 +50,7 @@ var flatpickrActivation = function()
   $('.fromT').flatpickr();
   $('.toT').flatpickr();
   $('.tgl_isi').flatpickr();
+  $('.rekapDate').flatpickr();
 }
 
 var hideErrMsg = function()

@@ -48,13 +48,6 @@ var isGroupMaster = function(){
                 $('#user_saldo_scs').hide();
                 document.getElementById("saldo_submit").disabled = true;
             }
-            // else {
-            //     inUserSaldo.classList.remove("is-valid");
-            //     inUserSaldo.classList.add("is-invalid"); // username bukan group master
-            //     $('#user_saldo_err').show();
-            //     $('#user_saldo_scs').hide();
-            //     document.getElementById("saldo_submit").disabled = true;
-            // }
         }
     });
   }
@@ -214,45 +207,17 @@ $( function() {
       appendTo: "#auto_con_div"
     });
 
-    // $("#user_saldo").on('change',function() {
-    //   var user_saldo = $('#user_saldo').val();
-    //   var inUserSaldo = document.getElementById("user_saldo");
-    //   getNamaLoket(user_saldo);
-    //   if(user_saldo.length >= 8){
-    //     $.ajax({
-    //         type:'POST',
-    //         url:base_url+'loket/is_group_master',
-    //         data:'user='+user_saldo,
-    //         success:function(html){
-    //             if(html == 'suc'){
-    //                 inUserSaldo.classList.remove("is-invalid");
-    //                 inUserSaldo.classList.add("is-valid"); // username adalah group master
-    //                 $('#user_saldo_scs').show();
-    //                 $('#user_saldo_err').hide();
-    //                 document.getElementById("saldo_submit").disabled = false;
-    //             }
-    //             else {
-    //                 inUserSaldo.classList.remove("is-valid");
-    //                 inUserSaldo.classList.add("is-invalid"); // username bukan group master
-    //                 $('#user_saldo_err').show();
-    //                 $('#user_saldo_scs').hide();
-    //                 document.getElementById("saldo_submit").disabled = true;
-    //             }
-    //         }
-    //     });
-    //   }
-    //   else {
-    //     inUserSaldo.classList.remove("is-invalid");
-    //     inUserSaldo.classList.remove("is-valid");
-    //     $('#user_saldo_scs').hide();
-    //     $('#user_saldo_err').hide();
-    //   }
-    // });
 });
 
 
 
 // =========================== close isi Saldo Page =========================== //
+
+// =========================== open tabel Rekap Page =========================== //
+
+
+
+// =========================== close tabel Rekap Page =========================== //
 
 
 // =========================== open create loket Page =========================== //

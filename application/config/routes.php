@@ -65,6 +65,7 @@ $route['saldo']                         = 'Saldo/index';
 $route['saldo/saldo_isi']               = 'Saldo/isiSaldoPage';
 $route['saldo/saldo_list']              = 'Saldo/listSaldoPage';
 $route['saldo/saldo_history']           = 'Saldo/listHistoryPage';
+$route['saldo/rekap_history']           = 'Saldo/rekapHistoryPage';
 
 $route['admin']                         = 'Admin/index';
 $route['admin/admin_create']            = 'Admin/createAdminPage';

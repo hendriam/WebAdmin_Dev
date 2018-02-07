@@ -82,6 +82,16 @@ class Saldo_model extends CI_Model{
       return $this->datatables->generate();
   }
 
+  public function getRekapDeposit($now)
+  {
+      $this->datatables->add_column('view', $now, $now);
+      $this->datatables->select('count(nominal) as total, sum(nominal) as jumlah');
+      $this->datatables->from('inm_deposit_langsung');
+      $this->datatables->where('DATE(tgl_create)', $now);
+      //$this->datatables->group_by('date(tgl_create)');
+      return $this->datatables->generate();
+  }
+
   public function getLastKwitansiNo()
   {
       return $this->db->select('no_kwitansi')->order_by('id','desc')->limit(1)->get('inm_deposit_langsung')->row('no_kwitansi');

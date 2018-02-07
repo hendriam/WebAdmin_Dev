@@ -24,7 +24,7 @@
     <script src="<?php echo base_url('assets/src/js/jquery-confirm.min.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="<?php echo base_url('assets/src/js/dataTables.colResize.js') ?>"></script>
-    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
 
   <!-- CoreUI main scripts -->

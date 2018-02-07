@@ -578,3 +578,58 @@ var adminTable = function () {
 
     });
 }
+
+var showRekap = function() {
+  
+  var tgl = $('#rekapDate').val();
+  $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
+  {
+      return {
+          "iStart": oSettings._iDisplayStart,
+          "iEnd": oSettings.fnDisplayEnd(),
+          "iLength": oSettings._iDisplayLength,
+          "iTotal": oSettings.fnRecordsTotal(),
+          "iFilteredTotal": oSettings.fnRecordsDisplay(),
+          "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+          "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+      };
+  };
+
+  var table = $("#tabelRekapHistory").DataTable({
+      "dom": 'Zlfrtip',
+      initComplete: function() {
+          var api = this.api();
+          $('#tabelRekapHistoryin_filter input')
+              .off('.DT')
+              .on('input.DT', function() {
+                  api.search(this.value).draw();
+          });
+      },
+          oLanguage: {
+            "sUrl": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Indonesian.json",
+          sProcessing: "loading..."
+      },
+          processing: true,
+          serverSide: true,
+          "searching": false,
+          "lengthChange": false,
+          "bInfo" : false,
+          paging: false,
+          destroy: true,
+          ajax: {"url": base_url+"saldo/getRekapJson", "type": "POST", "data": { "tgl": tgl }},
+
+            columns: [
+                  {"data": "view"},
+                  {"data": "total"},
+                  {"data": "jumlah", render: $.fn.dataTable.render.number(',', '.', '')}
+            ],
+            order: [[1, 'desc']],
+            rowCallback: function(row, data, iDisplayIndex) {
+                var info = this.fnPagingInfo();
+                var page = info.iPage;
+                var length = info.iLength;
+                $('td:eq(0)', row).html();
+            }
+
+  });
+}

@@ -9,5 +9,8 @@
     <li class="nav-item">
       <a href="javascript:getPageSaldo('saldo_history')" class="nav-link">History</a>
     </li>
+    <li class="nav-item">
+      <a href="javascript:getPageSaldo('rekap_history')" class="nav-link">Rekap History</a>
+    </li>
   </ul>
 </div>
