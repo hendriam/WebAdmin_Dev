@@ -37,6 +37,7 @@
     <div class="card-footer">
       <button type="submit" id="saldo_submit" class="btn btn-sm btn-primary" onclick="submitSaldoForm(event)"><i class="fa fa-dot-circle-o"></i> Submit</button>
       <button type="reset" id="saldo_reset" class="btn btn-sm btn-danger" onclick="resetSaldoForm(event)"><i class="fa fa-ban"></i> Reset</button>
+      <button type="button" class="btn btn-sm btn-danger" name="button" onclick="showPrompt()"><i class="fa fa-print"></i> Setting Printer</button>
     </div>
     </form>
   </div>

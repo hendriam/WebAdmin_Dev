@@ -172,6 +172,12 @@ class Saldo extends CI_Controller{
       echo json_encode($output);
   }
 
+  public function setPrinter()
+  {
+      $printer_name = $this->input->post('value', TRUE);
+      $this->session->unset_userdata('printer');
+      $this->session->set_userdata('printer', $printer_name);
+  }
   // public function pdf()
 	// {
   // 		$this->load->library('pdfgenerator');

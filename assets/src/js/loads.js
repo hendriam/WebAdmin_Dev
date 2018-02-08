@@ -23,6 +23,108 @@ maskMoney();
 
 
 // =========================== open isi Saldo Page =========================== //
+var showPrompt = function() {
+  startConnection();
+  $.confirm({
+      title: 'Pengaturan Printer!',
+      content: '' +
+      '<div class="form-group">' +
+      '<label>Silahkan pilih printer yang akan digunakan</label>' +
+      '<select class="name form-control" name="list_printer" id="list_printer" required />' +
+      '</div>',
+      buttons: {
+          formSubmit: {
+              text: 'Submit',
+              btnClass: 'btn-blue',
+              action: function () {
+                  var name = this.$content.find('.name').val();
+                  if(!name){
+                      qz.websocket.disconnect();
+                      $.alert('Tidak Valid');
+                      return false;
+                  }
+                  //$.alert('Your name is ' + name);
+                  $.ajax({
+                      type: "POST",
+                      url: "saldo/setPrinter",
+                      data: { value: name }
+                   }).done(function( msg ) {
+                      //$.alert('Sukses');
+                      qz.websocket.disconnect();
+                      location.reload();
+                   });
+              }
+          },
+          cancel: function () {
+              qz.websocket.disconnect();
+          },
+      },
+      onContentReady: function () {
+          // bind to events
+          var jc = this;
+          this.$content.find('form').on('submit', function (e) {
+              // if the user submits the form by pressing enter in the field.
+              e.preventDefault();
+              jc.$$formSubmit.trigger('click'); // reference the button and click it
+          });
+      }
+  });
+}
+
+function startConnection(config) {
+    if (!qz.websocket.isActive()) {
+
+        qz.websocket.connect(config).then(function() {
+          findPrinters();
+        }).catch(handleConnectionError);
+    } else {
+        displayMessage('An active connection with QZ already exists.', 'alert-warning');
+    }
+}
+
+function displayMessage(msg, css) {
+    if (css == undefined) { css = 'alert-info'; }
+
+    var timeout = setTimeout(function() { $('#' + timeout).alert('close'); }, 5000);
+
+    var alert = $("<div/>").addClass('alert alert-dismissible fade in ' + css)
+            .css('max-height', '20em').css('overflow', 'auto')
+            .attr('id', timeout).attr('role', 'alert');
+    alert.html("<button type='button' class='close' data-dismiss='alert'>&times;</button>" + msg);
+
+    $("#qz-alert").append(alert);
+}
+
+function handleConnectionError(err) {
+
+    if (err.target != undefined) {
+        if (err.target.readyState >= 2) { //if CLOSING or CLOSED
+            displayError("Connection to QZ Tray was closed");
+        } else {
+            displayError("A connection error occurred, check log for details");
+            console.error(err);
+        }
+    } else {
+        displayError(err);
+    }
+}
+
+function findPrinters() {
+
+    qz.printers.find().then(function(data) {
+        var list = '';
+        for(var i = 0; i < data.length; i++) {
+            list += "<option>" + data[i] + "</option>";
+        }
+        $("#list_printer").append(list);
+        // displayMessage("<strong>Available printers:</strong><br/>" + list);
+    }).catch(displayError);
+}
+
+function displayError(err) {
+    console.error(err);
+    //displayMessage(err, 'alert-danger');
+}
 
 var isGroupMaster = function(){
   var user_saldo = $('#user_saldo').val();
@@ -123,12 +225,18 @@ var isFormSaldoEmpty = function()
 }
 
 var print = function(datas) {
+  var printer = $('#printer_use').val();
+  if(printer == '')
+  {
+    $.alert('Setting Printer terlebih dahulu');
+    return;
+  }
   var bilangan = datas.nominal;
   var	reverse = bilangan.toString().split('').reverse().join(''),
       ribuan 	= reverse.match(/\d{1,3}/g);
       ribuan	= ribuan.join('.').split('').reverse().join('');
 
-  var config = qz.configs.create("EPSON LX-300+ /II");
+  var config = qz.configs.create(printer);
 
   var data = [
      '\x1B' + '\x61' + '\x31', // center align
@@ -213,7 +321,32 @@ var auto_complete_saldo = function() {
   });
 }
 
-
+var testPrint = function()
+{
+  qz.websocket.disconnect();
+  $.confirm({
+    title: 'Confirm!',
+    content: 'Ingin Tes Printer',
+    buttons: {
+        confirm: function () {
+          qz.websocket.connect().then(function() {
+            var data = {
+            	"nama_loket" : "Tes Printer",
+            	"no_kwitansi" : "1945081700001",
+            	"nominal" : "50000000",
+            	"tanggal" : "17-08-1945 08:30",
+            	"terbilang" : "Lima Puluh Juta Rupiah ",
+            	"username" : "tesprinter"
+            };
+            print(data);
+          });
+        },
+        cancel: function () {
+            qz.websocket.disconnect();
+        }
+    }
+});
+}
 
 // =========================== close isi Saldo Page =========================== //
 

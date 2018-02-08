@@ -20,6 +20,7 @@
     </div>
 
     <div class="card-footer">
+      <button type="button" class="btn btn-sm btn-danger" name="button" onclick="showPrompt()"><i class="fa fa-print"></i> Setting Printer</button>
     </div>
   </div>
 </div>

@@ -6,7 +6,13 @@
   <!-- app body close  -->
 
   <footer class="app-footer">
-    <span><a href="http://coreui.io">CoreUI</a> © 2017 creativeLabs.</span>
+    <!-- <span><a href="http://coreui.io">CoreUI</a> © 2017 creativeLabs.</span> -->
+    <button type="button" class="btn btn-sm btn-danger" name="button" onclick="testPrint()">Tes Print</button>
+    <input type="hidden" id="printer_use" class="form-control" style="width:300px;" value="<?php echo $this->session->userdata('printer'); ?>" disabled>
+    <div id="qz-alert" style="position: fixed; width: 60%; margin: 0 4% 0 36%; z-index: 900;"></div>
+    <div id="printer-msg" style="margin-left:20px;">
+      <span class="align-middle">Printer : <?php if($this->session->userdata('printer')) {echo $this->session->userdata('printer'); }else{ echo 'Belum diPilih'; }  ?><span>
+    </div>
     <span class="ml-auto">Powered by <a href="http://coreui.io">CoreUI</a></span>
   </footer>
     <!-- <script src="http://code.jquery.com/jquery-1.10.2.js"></script> -->
