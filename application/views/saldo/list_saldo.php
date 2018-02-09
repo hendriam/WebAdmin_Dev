@@ -4,13 +4,14 @@
       <strong>Daftar Saldo</strong>
     </div>
 
-    <div class="card-body table-responsive">
+    <div class="card-body table-responsive col-md-8">
       <table class="table table-bordered" id="tabelSaldo">
           <thead>
             <tr>
-              <th>Nama</th>
-              <th>Username</th>
-              <th>Group</th>
+              <th></th>
+              <th>Group ID</th>
+              <th>Nama Loket</th>
+              <th>Tanggal Update</th>
               <th>Saldo</th>
             </tr>
           </thead>

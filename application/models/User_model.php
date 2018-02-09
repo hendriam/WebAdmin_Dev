@@ -120,7 +120,7 @@ class User_model extends CI_Model{
   {
       $this->datatables->select('inm_users.id as id,nama_user,username,group_id,level,no_telp,nama_status');
       $this->datatables->from('inm_users');
-      $this->datatables->join('inm_saldo_loket', 'inm_users.id=inm_saldo_loket.user_id');
+      //$this->datatables->join('inm_saldo_loket', 'inm_users.id=inm_saldo_loket.user_id');
       $this->datatables->join('inm_users_status', 'inm_users.status_id=inm_users_status.id');
       $this->datatables->add_column('icon', '
       <a href="javascript:void(0);" class="info" data-id="$1" data-username="$2">

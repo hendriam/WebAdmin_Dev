@@ -37,6 +37,15 @@ var format = function (d) {
     '</table>';
 }
 
+var formatExtraSaldo = function (d) {
+
+    var text = '<table cellpadding="5" class="table-bordered" cellspacing="0" border="0" style="padding-left:50px;margin-left:10%;">';
+    text += '<thead><tr><th width="200">Username</th><th width="200">Nama Loket</th></tr></thead>';
+    text += d;
+    text += '</table>';
+    return text;
+}
+
 var loketTable = function () {
   maskMoney();
   $(document).ready(function(){
@@ -294,9 +303,13 @@ var loketSaldo = function () {
               serverSide: true,
               ajax: {"url": base_url+"saldo/getSaldoJson", "type": "POST"},
                 columns: [
-                      {"data": "nama_user"},
-                      {"data": "username"},
+                      {
+                        "data": "icon",
+                        "className":"details-control"
+                      },
                       {"data": "group_id"},
+                      {"data": "nama_user"},
+                      {"data": "tgl"},
                       {"data": "jumlah_saldo", render: $.fn.dataTable.render.number(',', '.', '')}
                 ],
                 order: [[1, 'asc']],
@@ -307,6 +320,38 @@ var loketSaldo = function () {
                     $('td:eq(0)', row).html();
                 }
 
+      });
+
+      $('#tabelSaldo tbody').on('click', 'td.details-control', function () {
+          var tr = $(this).closest('tr');
+          var tdi = tr.find("i.fa");
+          var row = table.row(tr);
+
+          if (row.child.isShown()) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+              tdi.first().removeClass('fa-minus-square');
+              tdi.first().addClass('fa-plus-square');
+          }
+          else {
+              var group = row.data().group_id;
+              if(group){
+                  $.ajax({
+                      type:'POST',
+                      url:base_url+'saldo/infoExtra',
+                      data:'group='+group,
+                      //dataType:'json',
+                      success:function(res){
+                        //console.log(res);
+                        row.child(formatExtraSaldo(res)).show();
+                        tr.addClass('shown');
+                        tdi.first().removeClass('fa-plus-square');
+                        tdi.first().addClass('fa-minus-square');
+                      }
+                  });
+              }
+          }
       });
     });
 }
@@ -580,7 +625,7 @@ var adminTable = function () {
 }
 
 var showRekap = function() {
-  
+
   var tgl = $('#rekapDate').val();
   $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
   {

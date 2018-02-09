@@ -47,6 +47,20 @@ class Saldo extends CI_Controller{
       echo $this->saldo_model->getTabelSaldo();
   }
 
+  public function infoExtra()
+  {
+      $group = $this->input->post('group', TRUE);
+      //$group = 'hagaihagai';
+
+      $data = $this->saldo_model->getExtraInfo($group);
+
+      foreach($data as $row)
+      {
+        echo '<tr><td>'.$row['username'].'</td><td>'.$row['nama_user'].'</td></tr>';
+      }
+
+  }
+
   public function getHistoryJson()
   {
       //data user by JSON object

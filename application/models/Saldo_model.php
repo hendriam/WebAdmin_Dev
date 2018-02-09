@@ -65,10 +65,23 @@ class Saldo_model extends CI_Model{
 
   public function getTabelSaldo()
   {
-      $this->datatables->select('inm_users.id as id,nama_user,username,group_id,jumlah_saldo');
+      $this->datatables->select('inm_users.id as id,nama_user,username,group_id,jumlah_saldo,inm_users.tgl_update as tgl');
       $this->datatables->from('inm_users');
       $this->datatables->join('inm_saldo_loket', 'inm_users.id=inm_saldo_loket.user_id');
+      $this->datatables->add_column('icon', '
+      <a href="javascript:void(0);" class="info" data-id="$1" data-group_id="$2">
+      <i class="fa fa-plus-square" aria-hidden="true"></i>
+      </a>', 'id,group_id');
       return $this->datatables->generate();
+  }
+
+  public function getExtraInfo($group)
+  {
+      $this->db->select('*');
+      $this->db->from('inm_users');
+      $this->db->where('group_id', $group);
+      $query = $this->db->get();
+      return $query->result_array();
   }
 
   public function getHistoryDeposit()
