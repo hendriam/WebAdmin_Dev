@@ -46,6 +46,20 @@ var formatExtraSaldo = function (d) {
     return text;
 }
 
+var inputMutasi = function (id) {
+    var text = '<form method="post" id="rekon_mutasi" enctype="multipart/form-data" class="form-horizontal">';
+    text += '<div class="row"><div class="col-md-8">';
+    text += '<input type="hidden" id="mutasi_id" name="mutasi_id" value="'+id+'">';
+    text += '<input type="text" class="form-control" id="rekonMutasi" name="rekonMutasi" placeholder="Masukkan username loket">';
+    text += '</div>';
+    text += '<div class="col-md-2">';
+    text += '<button type="submit" id="rekon_submit" class="btn btn-xs btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button>';
+    text += '</div></div>';
+    text += '<div id="auto_con_div" onclick=""></div>';
+    text += '</form>';
+    return text;
+}
+
 var loketTable = function () {
   maskMoney();
   $(document).ready(function(){
@@ -644,7 +658,7 @@ var showRekap = function() {
       "dom": 'Zlfrtip',
       initComplete: function() {
           var api = this.api();
-          $('#tabelRekapHistoryin_filter input')
+          $('#tabelRekapHistory_filter input')
               .off('.DT')
               .on('input.DT', function() {
                   api.search(this.value).draw();
@@ -676,5 +690,135 @@ var showRekap = function() {
                 $('td:eq(0)', row).html();
             }
 
+  });
+}
+
+var produkList = function() {
+
+  $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
+  {
+      return {
+          "iStart": oSettings._iDisplayStart,
+          "iEnd": oSettings.fnDisplayEnd(),
+          "iLength": oSettings._iDisplayLength,
+          "iTotal": oSettings.fnRecordsTotal(),
+          "iFilteredTotal": oSettings.fnRecordsDisplay(),
+          "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+          "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+      };
+  };
+
+  var table = $("#tabelProduk").DataTable({
+      "dom": 'Zlfrtip',
+      initComplete: function() {
+          var api = this.api();
+          $('#tabelProduk_filter input')
+              .off('.DT')
+              .on('input.DT', function() {
+                  api.search(this.value).draw();
+          });
+      },
+          oLanguage: {
+            "sUrl": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Indonesian.json",
+          sProcessing: "loading..."
+      },
+          processing: true,
+          serverSide: true,
+          destroy: true,
+          ajax: {"url": base_url+"master/getProdukJson", "type": "POST"},
+
+            columns: [
+                  {"data": "nama_lengkap"},
+                  {"data": "nama_singkat"},
+                  {"data": "jenis"},
+                  {"data": "vendor"},
+                  {"data": "status"}
+            ],
+            //order: [[1, 'desc']],
+            rowCallback: function(row, data, iDisplayIndex) {
+                var info = this.fnPagingInfo();
+                var page = info.iPage;
+                var length = info.iLength;
+                $('td:eq(0)', row).html();
+            }
+
+  });
+}
+
+var mutasiList = function() {
+
+  $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
+  {
+      return {
+          "iStart": oSettings._iDisplayStart,
+          "iEnd": oSettings.fnDisplayEnd(),
+          "iLength": oSettings._iDisplayLength,
+          "iTotal": oSettings.fnRecordsTotal(),
+          "iFilteredTotal": oSettings.fnRecordsDisplay(),
+          "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+          "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+      };
+  };
+
+  var table = $("#tabelMutasi").DataTable({
+      "dom": 'Zlfrtip',
+      initComplete: function() {
+          var api = this.api();
+          $('#tabelMutasi_filter input')
+              .off('.DT')
+              .on('input.DT', function() {
+                  api.search(this.value).draw();
+          });
+      },
+          oLanguage: {
+            "sUrl": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Indonesian.json",
+          sProcessing: "loading..."
+      },
+          processing: true,
+          serverSide: true,
+          destroy: true,
+          ajax: {"url": base_url+"mutasi/getMutasiJson", "type": "POST"},
+            columns: [
+                  {
+                    "data": "icon",
+                    "className":"details-control"
+                  },
+                  {"data": "nama_bank"},
+                  {"data": "nominal", render: $.fn.dataTable.render.number(',', '.', '')},
+                  {"data": "keterangan"},
+                  {"data": "tgl_transfer"}
+            ],
+            order: [[1, 'asc']],
+            rowCallback: function(row, data, iDisplayIndex) {
+                var info = this.fnPagingInfo();
+                var page = info.iPage;
+                var length = info.iLength;
+                $('td:eq(0)', row).html();
+            }
+
+  });
+
+  $('#tabelMutasi tbody').on('click', 'td.details-control', function () {
+      var tr = $(this).closest('tr');
+      var tdi = tr.find("i.fa");
+      var row = table.row(tr);
+
+      if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          tr.removeClass('shown');
+          tdi.first().removeClass('fa-minus-square');
+          tdi.first().addClass('fa-plus-square');
+      }
+      else {
+          var id = row.data().id;
+          if(id){
+            row.child(inputMutasi(id)).show();
+            tr.addClass('shown');
+            tdi.first().removeClass('fa-plus-square');
+            tdi.first().addClass('fa-minus-square');
+            auto_complete_tiket();
+          }
+      }
   });
 }

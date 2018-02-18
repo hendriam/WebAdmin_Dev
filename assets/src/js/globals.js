@@ -3,6 +3,8 @@ var _route_loket       = 'loket';
 var _route_laporan     = 'laporan';
 var _route_saldo       = 'saldo';
 var _route_admin       = 'admin';
+var _route_master      = 'master';
+var _route_mutasi      = 'mutasi';
 
 var _cover_transaksi   = '#isi';
 
@@ -24,6 +26,29 @@ function getPageSaldo(str){
 function getPageAdmin(str){
   var routes = _route_admin + '/' + str;
   toLoadSecondPage(routes, _cover_transaksi, admin_page);
+}
+
+function getPageMaster(str){
+  var routes = _route_master + '/' + str;
+  toLoadSecondPage(routes, _cover_transaksi, master_page);
+}
+
+function getPageMutasi(str){
+  var routes = _route_mutasi + '/' + str;
+  toLoadSecondPage(routes, _cover_transaksi, mutasi_page);
+}
+
+var mutasi_page = function()
+{
+  console.log('mutasi_page_load');
+  mutasiList();
+  auto_complete_tiket();
+}
+
+var master_page = function()
+{
+  console.log('master_page');
+  produkList();
 }
 
 var saldo_table = function()
@@ -90,6 +115,12 @@ var resetFormLoketValue = function()
     $('#nama').val('');
     $('#alamat').val('');
     $('#email').val('');
+}
+
+var resetFormMutasiValue = function()
+{
+    $('#userfile').val('');
+    $('#bank').val('');
 }
 
 var coomingSoon = function()

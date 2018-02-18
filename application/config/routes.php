@@ -71,6 +71,10 @@ $route['admin']                         = 'Admin/index';
 $route['admin/admin_create']            = 'Admin/createAdminPage';
 $route['admin/admin_list']              = 'Admin/listAdminPage';
 
+$route['mutasi']                        = 'Mutasi/index';
+$route['mutasi/upload']                 = 'Mutasi/uploadPage';
+$route['mutasi/list']                   = 'Mutasi/listPage';
+
 $route['error_550']                     = 'Error';
 
 $route['default_controller'] = $route['login'];

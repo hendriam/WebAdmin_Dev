@@ -45,7 +45,7 @@
         <a class="nav-link" href="<?php echo base_url('loket');?>">Loket</a>
       </li>
       <li class="nav-item px-3">
-        <a class="nav-link" href="javascript:coomingSoon()">Mutasi</a>
+        <a class="nav-link" href="<?php echo base_url('mutasi');?>">Mutasi</a>
       </li>
       <li class="nav-item px-3">
         <a class="nav-link" href="<?php echo base_url('saldo');?>">Saldo</a>

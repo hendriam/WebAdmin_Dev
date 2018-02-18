@@ -3,13 +3,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Mutasi extends CI_Controller{
 
-  public $ca_id = "101inm";
-
   public function __construct()
   {
     parent::__construct();
     $this->load->library('form_validation');
     $this->load->model('mutasi_model');
+    $this->load->model('saldo_model');
+    $this->load->helper('date_helper');
+    $this->load->library('datatables');
     //$this->output->enable_profiler(TRUE);
     if($this->session->userdata('isLog') == FALSE)
     {
@@ -20,28 +21,42 @@ class Mutasi extends CI_Controller{
 
   public function index()
   {
-      $data = $this->nodepath->getNodepath();
-      $data['title']='Mutasi';
-      $this->load->view('admin/layouts/header', $data);
-      $this->load->view('admin/mutasi/csv_upload');
-      $this->load->view('admin/layouts/footer');
+      $data['title']      = 'Menu Mutasi';
+      $data['submenu']    = 'mutasi/menu_mutasi';
+      $data['contents']   = 'mutasi/upload_mutasi';
+      $this->load->view('templates/app', $data);
+  }
+
+  public function uploadPage()
+  {
+      $this->load->view('mutasi/upload_mutasi');
+  }
+
+  public function listPage()
+  {
+      $this->load->view('mutasi/list_mutasi');
+  }
+
+  public function getMutasiJson()
+  {
+      //data user by JSON object
+      header('Content-Type: application/json');
+      echo $this->mutasi_model->getTabelMutasi();
   }
 
   public function do_upload()
   {
-
-      $this->form_validation->set_rules('userfile', 'CSV file', 'callback_file_selected_test');
-      $this->form_validation->set_rules('bank', 'Nama Bank', 'required');
+      $this->form_validation->set_rules('userfile', 'Mutasi file', 'callback_file_selected_test');
+      $this->form_validation->set_rules('bank', 'Jenis Bank', 'required');
       if($this->form_validation->run() == FALSE)
       {
-          $data = $this->nodepath->getNodepath();
-          $data['title']='Mutasi';
-          $this->load->view('admin/layouts/header', $data);
-          $this->load->view('admin/mutasi/csv_upload');
-          $this->load->view('admin/layouts/footer');
+          $output['title'] = 'failed';
+          $output['msg'] = validation_errors();
+          echo json_encode($output);
       }
       else
       {
+
           $config['upload_path']          = './uploads/';
           $config['allowed_types']        = 'csv';
           $config['max_size']             = 100;
@@ -55,8 +70,9 @@ class Mutasi extends CI_Controller{
           {
               $error = $this->upload->display_errors();
 
-              $this->session->set_flashdata('upload_failed', $error);
-              redirect('mutasi', 'refresh');
+              $output['title'] = 'failed';
+              $output['msg'] = $error;
+              echo json_encode($output);
 
           }
           else
@@ -67,22 +83,31 @@ class Mutasi extends CI_Controller{
               $file = $path.''.$file_name;
 
               // insert data
-              if($dataArr = $this->getCsvMandiri($file) == 'failed')
+              if($this->getCsvMandiri($file) == 'failed')
               {
-                  $this->session->set_flashdata('upload_failed', 'Gagal upload file');
-                  redirect('mutasi', 'refresh');
+                  $output['title'] = 'failed';
+                  $output['msg'] = 'gagal upload file';
+                  echo json_encode($output);
               }
               else
               {
-                  $this->session->set_flashdata('upload_success', 'Berhasil upload file');
-                  redirect('mutasi', 'refresh');
+                  $this->autoCompare();
+                  $output['title'] = 'success';
+                  $output['msg'] = 'berhasil upload file';
+                  echo json_encode($output);
+                  // if($this->autoCompare())
+                  // {
+                  //   $output['title'] = 'success';
+                  //   $output['msg'] = 'berhasil upload file';
+                  //   echo json_encode($output);
+                  // }
+                  // else
+                  // {
+                  //   $output['title'] = 'failed';
+                  //   $output['msg'] = 'gagal autocek mutasi';
+                  //   echo json_encode($output);
+                  // }
               }
-
-              // $_SESSION['read'] = $this->getCsvMandiri($file);
-              // $this->session->mark_as_flash('read');
-              //
-              // $this->session->set_flashdata('upload_success', 'Berhasil diupload');
-              // redirect('mutasi', 'refresh');
           }
       }
   }
@@ -102,7 +127,7 @@ class Mutasi extends CI_Controller{
   {
       $this->load->library('CSVReader');
       $keys = array();
-      $newArray = array();
+      //$newArray = array();
       // Do it
       $data = $this->csvreader->csvToArray($file, ',');
 
@@ -125,12 +150,12 @@ class Mutasi extends CI_Controller{
       }
 
       // Add Ids, just in case we want them later
-      $keys[] = 'id';
-      for ($i = 0; $i < $count; $i++) {
-          $data[$i][] = $i;
-      }
+      // $keys[] = 'id';
+      // for ($i = 0; $i < $count; $i++) {
+      //     $data[$i][] = $i;
+      // }
 
-      // Bring it all together
+      // // Bring it all together
       for ($j = 0; $j < $count; $j++) {
           $d = array_combine($keys, $data[$j]);
           $newArray[$j] = $d;
@@ -138,16 +163,13 @@ class Mutasi extends CI_Controller{
 
       $dataArr =  $newArray;
 
-      date_default_timezone_set('Asia/Jakarta');
-      $now = date('Y-m-d H:i:s');
-
       $insert = array();
       $i = 0;
       foreach ($dataArr as $key) {
           $insert[$i]['raw'] = json_encode($dataArr[$i]);
           $insert[$i]['nama_bank'] = $this->input->post('bank', TRUE);
           $insert[$i]['no_rekening'] = $key['Account No'];
-          $insert[$i]['tgl_create'] = $now;
+          $insert[$i]['tgl_create'] = now();
           if($this->validateDate($key['Date'], "j/n/Y")) // format mandiri csv baru
           {
               $dateFormat = DateTime::createFromFormat("j/n/Y",$key['Date']);
@@ -160,16 +182,26 @@ class Mutasi extends CI_Controller{
           }
           else
           {
-              $this->session->set_flashdata('upload_failed', 'Format tanggal tidak diketahui');
-              redirect('mutasi', 'refresh');
+              $output['title'] = 'failed';
+              $output['msg'] = 'format tanggal tidak diketahui';
+              echo json_encode($output);
           }
 
           $insert[$i]['waktu_transfer'] = 'NULL';
           $insert[$i]['keterangan'] = $key['Description'].' '.$key['Description2'].' '.$key['Reference No.'];
-          $insert[$i]['debit'] = str_replace(',','',$key['Debit']);
-          $insert[$i]['kredit'] = str_replace(',','',$key['Credit']);
+          if($key['Debit'] == 0)
+          {
+            $insert[$i]['nominal'] = str_replace(',','',$key['Credit']);
+          }
+          else if($key['Credit'] == 0)
+          {
+            $insert[$i]['nominal'] = str_replace(',','',$key['Debit']);
+          }
+          else
+          {
+            $insert[$i]['nominal'] = 0;
+          }
           $insert[$i]['status_id'] = '1'; // default -> proses
-          $insert[$i]['ca_id'] = $this->ca_id;
           $insert[$i]['admin_id'] = $this->session->userdata('adminId');
 
           $i++;
@@ -194,6 +226,163 @@ class Mutasi extends CI_Controller{
   {
       $d = DateTime::createFromFormat($format, $date);
       return $d && $d->format($format) == $date;
+  }
+
+  // dengan kode unik auto generate
+  public function autoCompare2()
+  {
+      $data = $this->mutasi_model->getTiket();
+      foreach ($data as $key) {
+        // cek jika nominal mutasi dgn nominal tiket sama
+        if($this->mutasi_model->getMutasiByNominal($key['nominal'])->num_rows() == 1)
+        {
+          $tiket_id = $key['id'];
+          $user_id = $key['user_id'];
+          $mutasi_id = $this->mutasi_model->getMutasiByNominal($key['nominal'])->row('id');
+          $nominal = $this->mutasi_model->getMutasiByNominal($key['nominal'])->row('nominal');
+          $this->db->trans_start();
+          //ubah status tiket
+          $this->mutasi_model->updateStatusTiket($tiket_id);
+          //ubah status mutasi
+          $this->mutasi_model->updateStatusMutasi($mutasi_id);
+          //update saldo
+          if(!$this->saldo_model->updateSaldo($user_id,$nominal))
+          {
+            $this->db->trans_rollback();
+            return false;
+          }
+          // ubah nominal deposit tiket
+          if(!$this->mutasi_model->ubahNominalTiket($tiket_id,$nominal))
+          {
+            $this->db->trans_rollback();
+            return false;
+          }
+          $this->db->trans_complete();
+          if ($this->db->trans_status() === TRUE)
+          {
+              continue;
+          }
+        }
+      }
+  }
+
+  // dengan kode unik dari id loket
+  public function autoCompare()
+  {
+      // ambil data mutasi
+      $data = $this->mutasi_model->getAllMutasi();
+      //$count = $this->mutasi_model->countAllMutasi()+1;
+      // ambil 4 digit terakhir dari nominal mutasi
+      foreach ($data as $key) {
+        // 0 = gagal cek mutasi
+        // 1 = id mutasi terakhir tidak dicek
+
+        // $count -= 1;
+        // if($count == 0)
+        // {
+        //   return true;
+        // }
+        $last4Digit = substr($key['nominal'], -4);
+        if(substr($last4Digit, -4) == '0000')
+        {
+          continue;
+        }
+        else if(substr($last4Digit, -4,3) == '000')
+        {
+          $user_id = substr($last4Digit, -1);
+        }
+        else if(substr($last4Digit, -4,2) == '00')
+        {
+          $user_id = substr($last4Digit, -2);
+        }
+        else if(substr($last4Digit, -4,1) == '0')
+        {
+          $user_id = substr($last4Digit, -3);
+        }
+        else
+        {
+          $user_id = substr($last4Digit, -4);
+        }
+
+        //cari id sesuai 4 digit terakhir
+        if($this->mutasi_model->isLoketExist($user_id))
+        {
+          $this->db->trans_start();
+          // ubah status mutasi
+          $this->mutasi_model->updateStatusMutasi($key['id']);
+          // update saldo
+          if(!$this->saldo_model->updateSaldo($user_id, $key['nominal']))
+          {
+            $this->db->trans_rollback();
+            return false;
+          }
+          $this->db->trans_complete();
+          if ($this->db->trans_status() === TRUE)
+          {
+              continue;
+          }
+        }
+      }
+  }
+
+  public function tiketList()
+  {
+      $match = $this->input->get('term',TRUE);
+      $data = $this->mutasi_model->getDataTiket($match);
+      $output = array();
+      foreach($data as $row)
+      {
+          $nominal =  number_format( $row['nominal'] , 0 ,'', '.');
+          $output[] = $row['idT'].','.$row['username'].' '.$row['nama_bank'].' '.$nominal.' '.$row['tgl'];
+      }
+      echo json_encode($output);
+  }
+
+  public function rekonDeposit()
+  {
+      $mutasi_id = $this->input->post('mutasi_id',TRUE);
+      $data = explode("," , $this->input->post('rekonMutasi',TRUE));
+      $tiket_id = $data[0];
+
+      $this->db->trans_start();
+      $user_id = $this->mutasi_model->getUserIdByTiket($tiket_id)->row('user_id');
+      $nominal = $this->mutasi_model->getSaldoByMutasiID($mutasi_id)->row('nominal');
+      // ganti status mutasi
+      $this->mutasi_model->updateStatusMutasi($mutasi_id);
+      // ganti status tiket
+      $this->mutasi_model->updateStatusTiket($tiket_id);
+      // tambah saldo
+      if(!$this->saldo_model->updateSaldo($user_id,$nominal))
+      {
+        $this->db->trans_rollback();
+        $output['title'] = 'failed';
+        $output['msg'] = 'gagal rekonsiliasi mutasi';
+        echo json_encode($output);
+      }
+      // ubah nominal deposit tiket
+      if(!$this->mutasi_model->ubahNominalTiket($tiket_id,$nominal))
+      {
+        $this->db->trans_rollback();
+        $output['title'] = 'failed';
+        $output['msg'] = 'gagal rekonsiliasi mutasi';
+        echo json_encode($output);
+      }
+
+      // log aktivitas
+      $this->db->trans_complete();
+      if ($this->db->trans_status() === FALSE)
+      {
+          $this->db->trans_rollback();
+          $output['title'] = 'failed';
+          $output['msg'] = 'gagal rekonsiliasi mutasi';
+          echo json_encode($output);
+      }
+      if ($this->db->trans_status() === TRUE)
+      {
+          $output['title'] = 'success';
+          $output['msg'] = 'berhasil rekonsiliasi mutasi';
+          echo json_encode($output);
+      }
   }
 
 }

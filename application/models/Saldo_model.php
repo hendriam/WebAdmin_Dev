@@ -21,11 +21,11 @@ class Saldo_model extends CI_Model{
   // isi array $data (jumlah_saldo, tgl_update)
   public function updateSaldo($user_id, $nominal)
   {
-      date_default_timezone_set('Asia/Jakarta');
-      $now = date('Y-m-d H:i:s');
+      // date_default_timezone_set('Asia/Jakarta');
+      // $now = date('Y-m-d H:i:s');
 
       $this->db->set('jumlah_saldo', 'jumlah_saldo+'.$nominal, FALSE);
-      $this->db->set('tgl_update', $now);
+      $this->db->set('tgl_update', now());
       $this->db->where('user_id', $user_id);
       $this->db->update('inm_saldo_loket');
       return true;

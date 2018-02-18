@@ -21,8 +21,6 @@
             <button type="submit" id="loket_submit" class="btn btn-xs btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button>
             <button type="reset" id="reset" class="btn btn-xs btn-danger"><i class="fa fa-ban"></i> Reset</button>
           </div>
-
-
         </div>
     </div>
 

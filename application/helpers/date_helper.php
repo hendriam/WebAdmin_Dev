@@ -25,7 +25,17 @@ if(!function_exists('nowDate'))
         return $now = date('d-m-Y H:i');
     }
 }
-
+/**
+ * This function used to generate current date
+ */
+if(!function_exists('nowDateOnly'))
+{
+    function nowDateOnly()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        return $now = date('Y-m-d');
+    }
+}
 /**
  * This function used to generate current date on int format
  */

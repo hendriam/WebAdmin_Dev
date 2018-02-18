@@ -680,3 +680,170 @@ var resetAdminForm = function (event){
   });
 }
 // =========================== close create Admin Page =========================== //
+
+// =========================== open add Produk Menu =========================== //
+$("#add_produk").ready(function() {
+  produkList();
+  loadJenisProduk();
+  loadVendor();
+});
+
+var loadJenisProduk = function()
+{
+  $.ajax({
+      url:base_url+'master/setJenisProdukOption',
+      method:'GET',
+      success:function(html){
+        $("#jenis_produk").append(html);
+      }
+  });
+}
+
+var loadVendor = function()
+{
+  $.ajax({
+      url:base_url+'master/setVendorOption',
+      method:'GET',
+      success:function(html){
+        $("#vendor").append(html);
+      }
+  });
+}
+
+
+// =========================== close add Produk Menu =========================== //
+
+// =========================== open upload mutasi Menu =========================== //
+
+$("#upload_mutasi_pg").ready(function() {
+  $(document).on('submit', '#mutasi_form', function(event){
+    event.preventDefault();
+    var formData = new FormData(this);
+
+    $.confirm({
+        title: 'Confirm!, Upload File Mutasi',
+        content: 'Submit data... ??',
+        buttons: {
+            confirm: {
+                text: 'Confirm',
+                btnClass: 'btn-blue',
+                keys: ['enter', 'shift'],
+                action: function(){
+                    if(isFormMutasiEmpty()){
+                      //$.alert('proses file');
+                       $.ajax({
+                           url:base_url+'mutasi/do_upload',
+                           method:'POST',
+                           data:formData,
+                           contentType:false,
+                           processData:false,
+                           dataType:"json",
+                           success:function(html){
+                             if (html.title == 'success'){
+                               $.alert(html.msg);                               
+                               resetFormMutasiValue();
+                             }
+                             if (html.title == 'failed') {
+                               $.alert(html.msg);
+                             }
+                           }
+                       });
+                    }
+                   else {
+                       $.alert('ada form yang belum diisi');
+                   }
+                }
+            },
+            cancel: function () {
+            },
+        }
+    });
+
+  });
+});
+
+
+var isFormMutasiEmpty = function()
+{
+  var userfile = $('#userfile').val();
+  var bank = $('#bank').val();
+
+  if(userfile == "" || bank == ""){
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
+var isFormRekonEmpty = function()
+{
+  var mutasi_id = $('#mutasi_id').val();
+  var tiketData = $('#rekonMutasi').val();
+
+  if(mutasi_id == "" || tiketData == ""){
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
+$( function() {
+  auto_complete_tiket();
+  $(document).on('submit', '#rekon_mutasi', function(event){
+    event.preventDefault();
+    var formData = new FormData(this);
+
+    $.confirm({
+        title: 'Confirm!, Rekon Deposit',
+        content: 'Submit data... ??',
+        buttons: {
+            confirm: {
+                text: 'Confirm',
+                btnClass: 'btn-blue',
+                keys: ['enter', 'shift'],
+                action: function(){
+                    if(isFormRekonEmpty()){
+                      //$.alert('rekon mutasi');
+                       $.ajax({
+                           url:base_url+'mutasi/rekonDeposit',
+                           method:'POST',
+                           data:formData,
+                           contentType:false,
+                           processData:false,
+                           dataType:"json",
+                           success:function(html){
+                             if (html.title == 'success'){
+                               $.alert(html.msg);
+                               $('#tabelMutasi').DataTable().ajax.reload();
+                             }
+                             if (html.title == 'failed') {
+                               $.alert(html.msg);
+                               $('#tabelMutasi').DataTable().ajax.reload();
+                             }
+                           }
+                       });
+                    }
+                   else {
+                       $.alert('ada form yang belum diisi');
+                   }
+                }
+            },
+            cancel: function () {
+            },
+        }
+    });
+
+  });
+});
+var auto_complete_tiket = function() {
+  $( function() {
+      $( "#rekonMutasi" ).autocomplete({
+        source: base_url+'mutasi/tiketList',
+        appendTo: "#auto_con_div"
+      });
+  });
+}
+
+// =========================== open upload mutasi Menu =========================== //
