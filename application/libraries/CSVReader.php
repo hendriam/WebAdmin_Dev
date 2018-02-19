@@ -37,17 +37,83 @@ class CSVReader {
     function csvToArray($file, $delimiter)
     {
         if (($handle = fopen($file, 'r')) !== FALSE) {
+          $i = 0;
+          while (($lineArray = fgetcsv($handle, 4000, $delimiter, '"')) !== FALSE) {
+            for ($j = 0; $j < count($lineArray); $j++) {
+              $arr[$i][$j] = $lineArray[$j];
+            }
+            $i++;
+          }
+          fclose($handle);
+          }
+        return $arr;
+    }
+
+    function csvToArrayBNI($file, $delimiter)
+    {
+        if (($handle = fopen($file, 'r')) !== FALSE) {
+          $i = 0;
+          while (($lineArray = fgetcsv($handle, 4000, $delimiter, '"')) !== FALSE) {
+            for ($j = 0; $j < count($lineArray); $j++) {
+              $arr[$i][$j] = $lineArray[$j];
+            }
+            $i++;
+          }
+          fclose($handle);
+          }
+        return $arr;
+    }
+
+    function csvToArrayBRI($file, $delimiter)
+    {
+      //$fp = file($file);
+      //$numCount = count($fp);
+      if (($handle = fopen($file, 'r')) !== FALSE) {
         $i = 0;
         while (($lineArray = fgetcsv($handle, 4000, $delimiter, '"')) !== FALSE) {
+          $i++;
           for ($j = 0; $j < count($lineArray); $j++) {
+            //if($i == $numCount-13) break;
+            if (in_array('textbox102', $lineArray)) break;
+            if (in_array('OPENING BALANCE', $lineArray)) break;
+            if($i < 10) continue;
             $arr[$i][$j] = $lineArray[$j];
           }
-          $i++;
+
         }
         fclose($handle);
         }
-        return $arr;
+      return $arr;
     }
+
+    // function csvToArrayBNI($file, $delimiter)
+    // {
+    //     $row = 0;
+    //     if (($handle = fopen($file, 'r')) !== FALSE) {
+    //         while (($data = fgetcsv($handle, 1000, $delimiter, '"')) !== FALSE) {
+    //         $num = count($data);
+    //         $row++;
+    //         $datas = array();
+    //         for ($c=0; $c < $num; $c++) {
+    //             if ($row == 1) continue;
+    //             $datas[$row][$c] = $data[$c];
+    //             //$datas['time'] = $data[1];
+    //             // $datas['remark'] = $data[2];
+    //             // $datas['debet'] = $data[3];
+    //             // $datas['credit'] = $data[4];
+    //             // $datas['teller_id'] = $data[5];
+    //             // $datas['tanggal'] = $data[6];
+    //             // $datas['jam'] = $data[7];
+    //             // $datas['keterangan'] = $data[8];
+    //             // $datas['debet2'] = $data[9];
+    //             // $datas['credit2'] = $data[10];
+    //             //$datas['teller_id2'] = $data[11];
+    //         }
+    //     }
+    //     fclose($handle);
+    //     }
+    //     return $datas;
+    // }
 
     function toArrayMandiri($file, $delimiter)
     {

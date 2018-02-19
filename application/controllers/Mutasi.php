@@ -82,32 +82,58 @@ class Mutasi extends CI_Controller{
               $path = './uploads/';
               $file = $path.''.$file_name;
 
-              // insert data
-              if($this->getCsvMandiri($file) == 'failed')
+              if($this->input->post('bank', TRUE) == 'MANDIRI')
               {
-                  $output['title'] = 'failed';
-                  $output['msg'] = 'gagal upload file';
-                  echo json_encode($output);
+                if($this->getCsvMandiri($file) == 'failed')
+                {
+                    $output['title'] = 'failed';
+                    $output['msg'] = 'gagal upload file';
+                    echo json_encode($output);
+                }
+                else
+                {
+                    $this->autoCompare();
+                    $output['title'] = 'success';
+                    $output['msg'] = 'berhasil upload file';
+                    echo json_encode($output);
+                }
               }
-              else
+              if($this->input->post('bank', TRUE) == 'BNI')
               {
-                  $this->autoCompare();
-                  $output['title'] = 'success';
-                  $output['msg'] = 'berhasil upload file';
-                  echo json_encode($output);
-                  // if($this->autoCompare())
-                  // {
-                  //   $output['title'] = 'success';
-                  //   $output['msg'] = 'berhasil upload file';
-                  //   echo json_encode($output);
-                  // }
-                  // else
-                  // {
-                  //   $output['title'] = 'failed';
-                  //   $output['msg'] = 'gagal autocek mutasi';
-                  //   echo json_encode($output);
-                  // }
+                  if($this->getCsvBNI($file) == 'failed')
+                  {
+                      $output['title'] = 'failed';
+                      $output['msg'] = 'gagal upload file';
+                      echo json_encode($output);
+                  }
+                  else
+                  {
+                      $this->autoCompare();
+                      $output['title'] = 'success';
+                      $output['msg'] = 'berhasil upload file';
+                      echo json_encode($output);
+                  }
               }
+              if($this->input->post('bank', TRUE) == 'BRI')
+              {
+                  if($this->getCsvBRI($file) == 'failed')
+                  {
+                      $output['title'] = 'failed';
+                      $output['msg'] = 'gagal upload file';
+                      echo json_encode($output);
+                  }
+                  else
+                  {
+                      $this->autoCompare();
+                      $output['title'] = 'success';
+                      $output['msg'] = 'berhasil upload file';
+                      echo json_encode($output);
+                  }
+                  // $output['title'] = 'success';
+                  // $output['msg'] = $this->getCsvBRI($file);
+                  // echo json_encode($output);
+              }
+
           }
       }
   }
@@ -196,6 +222,194 @@ class Mutasi extends CI_Controller{
           else if($key['Credit'] == 0)
           {
             $insert[$i]['nominal'] = str_replace(',','',$key['Debit']);
+          }
+          else
+          {
+            $insert[$i]['nominal'] = 0;
+          }
+          $insert[$i]['status_id'] = '1'; // default -> proses
+          $insert[$i]['admin_id'] = $this->session->userdata('adminId');
+
+          $i++;
+      }
+
+      $this->db->trans_start();
+      foreach ($insert as $dataIns)
+      {
+          $this->mutasi_model->insertMutasi($dataIns);
+      }
+      $this->db->trans_complete();
+
+      if ($this->db->trans_status() === FALSE)
+      {
+          $msg = 'failed';
+          return $msg;
+      }
+
+  }
+
+  public function getCsvBNI($file)
+  {
+    //$file = base_url('uploads/1518981066BRI_-_Copy.csv');
+    $this->load->library('CSVReader');
+    $keys = array();
+    $newArray = array();
+    // Do it
+    $data = $this->csvreader->csvToArrayBNI($file, ',');
+
+    // Set number of elements (minus 1 because we shift off the first row)
+    $count = count($data) - 1;
+
+    // Use first row for names
+    // Check and rename duplicate label
+    $labels = array_shift($data);
+    foreach ($labels as $k => $value) {
+        if(in_array($value, $keys))
+        {
+            $keys[] = $value.'2';
+        }
+        else
+        {
+            $keys[] = $value;
+        }
+    }
+
+    for ($j = 0; $j < $count; $j++) {
+        $d = array_combine($keys, $data[$j]);
+        $newArray[$j] = $d;
+    }
+
+    $dataArr =  $newArray;
+
+    $insert = array();
+    $i = 0;
+    foreach ($dataArr as $key) {
+        $insert[$i]['raw'] = json_encode($dataArr[$i]);
+        $insert[$i]['nama_bank'] = $this->input->post('bank', TRUE);
+        $insert[$i]['no_rekening'] = '-';
+        $insert[$i]['tgl_create'] = now();
+        $splitDate = explode(" ",$key['Post Date']);
+        $date = $splitDate[0];
+        $time = $splitDate[1];
+        // if($this->validateDate($date, "j/n/Y")) // format mandiri csv baru
+        // {
+        //     $dateFormat = DateTime::createFromFormat("j/n/Y", $key['Date']);
+        //     $insert[$i]['tgl_transfer'] = $dateFormat->format('Y-m-d');
+        // }
+        if($this->validateDate($date, 'd/m/y')) // format csv mandiri lama
+        {
+            $dateFormat = DateTime::createFromFormat("d/m/y",$date);
+            $insert[$i]['tgl_transfer'] = $dateFormat->format('Y-m-d');
+        }
+        else
+        {
+            $output['title'] = 'failed';
+            $output['msg'] = 'format tanggal tidak diketahui';
+            echo json_encode($output);
+        }
+        $splitTime = explode(".", $time);
+        $insert[$i]['waktu_transfer'] = $splitTime[0].':'.$splitTime[1].':'.$splitTime[2];
+        $insert[$i]['keterangan'] = $key['Description'].' '.$key['Branch'].' '.$key['Journal No.'];
+        if($key['Debit'] == 0)
+        {
+          $insert[$i]['nominal'] = str_replace(',','',$key['Credit']);
+        }
+        else if($key['Credit'] == 0)
+        {
+          $insert[$i]['nominal'] = str_replace(',','',$key['Debit']);
+        }
+        else
+        {
+          $insert[$i]['nominal'] = 0;
+        }
+        $insert[$i]['status_id'] = '1'; // default -> proses
+        $insert[$i]['admin_id'] = $this->session->userdata('adminId');
+
+        $i++;
+    }
+
+    $this->db->trans_start();
+    foreach ($insert as $dataIns)
+    {
+        $this->mutasi_model->insertMutasi($dataIns);
+    }
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE)
+    {
+        $msg = 'failed';
+        return $msg;
+    }
+  }
+
+  public function getCsvBRI($file)
+  {
+      $this->load->library('CSVReader');
+      $keys = array();
+      //$newArray = array();
+      // Do it
+      $data = $this->csvreader->csvToArrayBRI($file, ',');
+      // hapus null value pada array
+      $datas = array_filter(array_map('array_filter', $data));
+      //return $datas = array_filter($data,'strlen');
+
+      // Set number of elements (minus 1 because we shift off the first row)
+      $count = count($datas) - 1;
+
+      // Use first row for names
+      // Check and rename duplicate label
+      $labels = array_shift($datas);
+      foreach ($labels as $k => $value) {
+          if(in_array($value, $keys))
+          {
+              $keys[] = $value.'2';
+          }
+          else
+          {
+              $keys[] = $value;
+          }
+      }
+
+      // // Bring it all together
+      for ($j = 0; $j < $count; $j++) {
+          $d = array_combine($keys, $datas[$j]);
+          $newArray[$j] = $d;
+      }
+
+      $dataArr =  $newArray;
+      $insert = array();
+      $i = 0;
+      foreach ($dataArr as $key) {
+          $insert[$i]['raw'] = json_encode($dataArr[$i]);
+          $insert[$i]['nama_bank'] = $this->input->post('bank', TRUE);
+          $insert[$i]['no_rekening'] = '-';
+          $insert[$i]['tgl_create'] = now();
+          // if($this->validateDate($key['textbox56'], "j/n/Y")) // format mandiri csv baru
+          // {
+          //     $dateFormat = DateTime::createFromFormat("j/n/Y",$key['textbox56']);
+          //     $insert[$i]['tgl_transfer'] = $dateFormat->format('Y-m-d');
+          // }
+          if($this->validateDate($key['textbox56'], 'd/m/y')) // format csv mandiri lama
+          {
+              $dateFormat = DateTime::createFromFormat("d/m/y",$key['textbox56']);
+              $insert[$i]['tgl_transfer'] = $dateFormat->format('Y-m-d');
+          }
+          else
+          {
+              $output['title'] = 'failed';
+              $output['msg'] = 'format tanggal tidak diketahui';
+              echo json_encode($output);
+          }
+
+          $insert[$i]['waktu_transfer'] = $key['textbox59'];
+          $insert[$i]['keterangan'] = $key['textbox18'].' '.$key['textbox14'];
+          if($key['textbox72'] == 0)
+          {
+            $insert[$i]['nominal'] = str_replace(',','',$key['textbox104']);
+          }
+          else if($key['textbox104'] == 0)
+          {
+            $insert[$i]['nominal'] = str_replace(',','',$key['textbox72']);
           }
           else
           {
