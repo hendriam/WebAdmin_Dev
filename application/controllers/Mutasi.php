@@ -58,7 +58,7 @@ class Mutasi extends CI_Controller{
       {
 
           $config['upload_path']          = './uploads/';
-          $config['allowed_types']        = 'csv';
+          $config['allowed_types']        = 'csv|txt';
           $config['max_size']             = 100;
           $new_name                       = time().$_FILES["userfile"]['name'];
           $config['file_name']            = $new_name;
@@ -133,7 +133,22 @@ class Mutasi extends CI_Controller{
                   // $output['msg'] = $this->getCsvBRI($file);
                   // echo json_encode($output);
               }
-
+              if($this->input->post('bank', TRUE) == 'Bukopin')
+              {
+                  if($this->getTxtBkp($file) == 'failed')
+                  {
+                      $output['title'] = 'failed';
+                      $output['msg'] = 'gagal upload file';
+                      echo json_encode($output);
+                  }
+                  else
+                  {
+                      $this->autoCompare();
+                      $output['title'] = 'success';
+                      $output['msg'] = 'berhasil upload file';
+                      echo json_encode($output);
+                  }
+              }
           }
       }
   }
@@ -384,11 +399,7 @@ class Mutasi extends CI_Controller{
           $insert[$i]['nama_bank'] = $this->input->post('bank', TRUE);
           $insert[$i]['no_rekening'] = '-';
           $insert[$i]['tgl_create'] = now();
-          // if($this->validateDate($key['textbox56'], "j/n/Y")) // format mandiri csv baru
-          // {
-          //     $dateFormat = DateTime::createFromFormat("j/n/Y",$key['textbox56']);
-          //     $insert[$i]['tgl_transfer'] = $dateFormat->format('Y-m-d');
-          // }
+
           if($this->validateDate($key['textbox56'], 'd/m/y')) // format csv mandiri lama
           {
               $dateFormat = DateTime::createFromFormat("d/m/y",$key['textbox56']);
@@ -433,6 +444,126 @@ class Mutasi extends CI_Controller{
           $msg = 'failed';
           return $msg;
       }
+
+  }
+
+  public function getTxtBkp($file)
+  {
+
+    $txt_file    = file_get_contents($file);
+    $rows        = explode("\n", $txt_file);
+    array_shift($rows);
+    $dataArr = array();
+    foreach($rows as $row => $data)
+    {
+        //get row data
+        $row_data = array_map('trim', explode('	', $data, 7));
+
+        if($rows == 1) continue;
+
+         $dataArr[$row]['date']  = json_decode(str_replace('\\u0000', '', json_encode($row_data[0])));
+
+         if ( ! isset($row_data[1])) {
+            $row_data[1] = null;
+            $dataArr[$row]['time'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[1])));
+         }
+         else
+         {
+            $dataArr[$row]['time'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[1])));
+         }
+         if ( ! isset($row_data[2])) {
+            $row_data[2] = null;
+            $dataArr[$row]['ref_num'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[2])));
+         }
+         else
+         {
+            $dataArr[$row]['ref_num'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[2])));
+         }
+         if ( ! isset($row_data[3])) {
+            $row_data[3] = null;
+            $dataArr[$row]['trx_des'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[3])));
+         }
+         else
+         {
+            $dataArr[$row]['trx_des'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[3])));
+         }
+         if ( ! isset($row_data[4])) {
+            $row_data[4] = null;
+            $dataArr[$row]['debit'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[4])));
+         }
+         else
+         {
+            $dataArr[$row]['debit'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[4])));
+         }
+         if ( ! isset($row_data[5])) {
+            $row_data[5] = null;
+            $dataArr[$row]['credit'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[5])));
+         }
+         else
+         {
+            $dataArr[$row]['credit'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[5])));
+         }
+         if ( ! isset($row_data[6])) {
+            $row_data[6] = null;
+            $dataArr[$row]['saldo'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[6])));
+         }
+         else
+         {
+            $dataArr[$row]['saldo'] = json_decode(str_replace('\\u0000', '', json_encode($row_data[6])));
+         }
+    }
+
+    $dataArrs = array_filter(array_map('array_filter', $dataArr));
+    //return $info;
+    $insert = array();
+    $i = 0;
+    foreach ($dataArrs as $key) {
+        $insert[$i]['raw'] = json_encode($dataArrs[$i]);
+        $insert[$i]['nama_bank'] = $this->input->post('bank', TRUE);
+        $insert[$i]['no_rekening'] = '-';
+        $insert[$i]['tgl_create'] = now();
+
+        $splitDate = str_split($key['date'], 2);
+        if(isset($splitDate[0])){ $year1 = $splitDate[0]; }
+        if(isset($splitDate[1])){ $year2 = $splitDate[1]; }
+        if(isset($splitDate[2])){ $month = $splitDate[2]; }
+        if(isset($splitDate[3])){ $day = $splitDate[3]; }
+        $insert[$i]['tgl_transfer'] = $year1.''.$year2.'-'.$month.'-'.$day;
+        $splitTime = str_split($key['time'], 2);
+        $insert[$i]['waktu_transfer'] = $key['time'][0].''.$key['time'][1].':'.$key['time'][2].''.$key['time'][3].':00';
+        $insert[$i]['keterangan'] = $key['ref_num'].' '.$key['trx_des'];
+        if($key['debit'] == '')
+        {
+          $insert[$i]['nominal'] = str_replace(',','',$key['credit']);
+        }
+        else if($key['credit'] == '')
+        {
+          $insert[$i]['nominal'] = str_replace(',','',$key['debit']);
+        }
+        else
+        {
+          $insert[$i]['nominal'] = 0;
+        }
+        $insert[$i]['status_id'] = '1'; // default -> proses
+        $insert[$i]['admin_id'] = $this->session->userdata('adminId');
+
+        $i++;
+    }
+
+    // return $insert;
+
+    $this->db->trans_start();
+    foreach ($insert as $dataIns)
+    {
+        $this->mutasi_model->insertMutasi($dataIns);
+    }
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE)
+    {
+        $msg = 'failed';
+        return $msg;
+    }
 
   }
 
