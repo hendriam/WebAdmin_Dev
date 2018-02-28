@@ -9,6 +9,7 @@ class Mutasi extends CI_Controller{
     $this->load->library('form_validation');
     $this->load->model('mutasi_model');
     $this->load->model('saldo_model');
+    $this->load->model('user_model');
     $this->load->helper('date_helper');
     $this->load->library('datatables');
     //$this->output->enable_profiler(TRUE);
@@ -148,6 +149,9 @@ class Mutasi extends CI_Controller{
                       $output['msg'] = 'berhasil upload file';
                       echo json_encode($output);
                   }
+                  // $output['title'] = 'success';
+                  // $output['msg'] = $this->getTxtBkp($file);
+                  // echo json_encode($output);
               }
           }
       }
@@ -155,7 +159,6 @@ class Mutasi extends CI_Controller{
 
   public function file_selected_test()
   {
-
       $this->form_validation->set_message('file_selected_test', 'File belum diinput..');
       if (empty($_FILES['userfile']['name'])) {
           return false;
@@ -458,7 +461,7 @@ class Mutasi extends CI_Controller{
     {
         //get row data
         $row_data = array_map('trim', explode('	', $data, 7));
-
+        if($row_data[0] == '') continue;
         if($rows == 1) continue;
 
          $dataArr[$row]['date']  = json_decode(str_replace('\\u0000', '', json_encode($row_data[0])));
@@ -513,7 +516,8 @@ class Mutasi extends CI_Controller{
          }
     }
 
-    $dataArrs = array_filter(array_map('array_filter', $dataArr));
+    // $dataArrs = array_filter(array_map('array_filter', $dataArr));
+    $dataArrs = $dataArr;
     //return $info;
     $insert = array();
     $i = 0;
@@ -681,6 +685,56 @@ class Mutasi extends CI_Controller{
           $output[] = $row['idT'].','.$row['username'].' '.$row['nama_bank'].' '.$nominal.' '.$row['tgl'];
       }
       echo json_encode($output);
+  }
+
+  public function grouplist()
+  {
+      $match = $this->input->get('term',TRUE);
+      $data = $this->user_model->getGroupId($match);
+      $output = array();
+      foreach($data as $row)
+      {
+        if($row['username'] == $row['group_id'])
+        {
+          $output[] = $row['username'];
+        }
+      }
+      echo json_encode($output);
+  }
+
+  public function rekonMutasi()
+  {
+      $username = $this->input->post('rekonMutasi',TRUE);
+      $mutasi_id = $this->input->post('mutasi_id',TRUE);
+      $user_id = $this->saldo_model->getUserIdByGroupId($username)->row('id');
+
+      $this->db->trans_start();
+      $nominal = $this->mutasi_model->getSaldoByMutasiID($mutasi_id)->row('nominal');
+      // ganti status mutasi
+      $this->mutasi_model->updateStatusMutasi($mutasi_id);
+      // tambah saldo
+      if(!$this->saldo_model->updateSaldo($user_id,$nominal))
+      {
+        $this->db->trans_rollback();
+        $output['title'] = 'failed';
+        $output['msg'] = 'gagal rekonsiliasi mutasi';
+        echo json_encode($output);
+      }
+      $this->db->trans_complete();
+      if ($this->db->trans_status() === FALSE)
+      {
+          $this->db->trans_rollback();
+          $output['title'] = 'failed';
+          $output['msg'] = 'gagal rekonsiliasi mutasi';
+          echo json_encode($output);
+      }
+      if ($this->db->trans_status() === TRUE)
+      {
+          $output['title'] = 'success';
+          $output['msg'] = 'berhasil rekonsiliasi mutasi';
+          echo json_encode($output);
+      }
+
   }
 
   public function rekonDeposit()

@@ -50,6 +50,15 @@ class Saldo_model extends CI_Model{
     return $this->db->get();
   }
 
+  public function getUserIdByGroupId($username)
+  {
+    $this->db->select('id');
+    $this->db->from('inm_users');
+    $this->db->where('username', $username);
+    $this->db->where('group_id', $username);
+    return $this->db->get();
+  }
+
 
   // show saldo by user
   public function getSaldoByUser($user_id)

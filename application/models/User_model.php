@@ -187,4 +187,13 @@ class User_model extends CI_Model{
       return $this->db->get();
   }
 
+  public function getGroupId($match)
+  {
+      $this->db->select('username,group_id');
+      $this->db->from('inm_users');
+      $this->db->like('username', $match, 'both');
+      $query = $this->db->get();
+      return $query->result_array();
+  }
+
 }

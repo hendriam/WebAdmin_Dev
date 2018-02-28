@@ -740,7 +740,7 @@ $("#upload_mutasi_pg").ready(function() {
                            dataType:"json",
                            success:function(html){
                              if (html.title == 'success'){
-                               $.alert(html.msg);                               
+                               $.alert(html.msg);
                                resetFormMutasiValue();
                              }
                              if (html.title == 'failed') {
@@ -807,7 +807,7 @@ $( function() {
                     if(isFormRekonEmpty()){
                       //$.alert('rekon mutasi');
                        $.ajax({
-                           url:base_url+'mutasi/rekonDeposit',
+                           url:base_url+'mutasi/rekonMutasi',
                            method:'POST',
                            data:formData,
                            contentType:false,
@@ -840,7 +840,7 @@ $( function() {
 var auto_complete_tiket = function() {
   $( function() {
       $( "#rekonMutasi" ).autocomplete({
-        source: base_url+'mutasi/tiketList',
+        source: base_url+'mutasi/grouplist',
         appendTo: "#auto_con_div"
       });
   });
