@@ -5,6 +5,7 @@ var _route_saldo       = 'saldo';
 var _route_admin       = 'admin';
 var _route_master      = 'master';
 var _route_mutasi      = 'mutasi';
+var _route_pinjaman    = 'pinjaman';
 
 var _cover_transaksi   = '#isi';
 
@@ -36,6 +37,18 @@ function getPageMaster(str){
 function getPageMutasi(str){
   var routes = _route_mutasi + '/' + str;
   toLoadSecondPage(routes, _cover_transaksi, mutasi_page);
+}
+
+function getPagePinjaman(str){
+  var routes = _route_pinjaman + '/' + str;
+  toLoadSecondPage(routes, _cover_transaksi, pinjaman_page);
+}
+
+var pinjaman_page = function()
+{
+  console.log('pinjaman_page_load');
+  auto_complete_saldo();
+  listDbs();
 }
 
 var mutasi_page = function()

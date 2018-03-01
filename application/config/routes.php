@@ -75,6 +75,10 @@ $route['mutasi']                        = 'Mutasi/index';
 $route['mutasi/upload']                 = 'Mutasi/uploadPage';
 $route['mutasi/list']                   = 'Mutasi/listPage';
 
+$route['pinjaman']                      = 'Pinjaman/index';
+$route['pinjaman/isi']                  = 'Pinjaman/isiDbsPage';
+$route['pinjaman/list']                 = 'Pinjaman/listDbsPage';
+
 $route['error_550']                     = 'Error';
 
 $route['default_controller'] = $route['login'];

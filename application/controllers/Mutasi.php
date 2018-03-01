@@ -18,6 +18,10 @@ class Mutasi extends CI_Controller{
         $this->session->set_flashdata('need_login','Anda harus login terlebih dahulu.');
         redirect('login','refresh');
     }
+    if($this->session->userdata('adminRole') == 'Helpdesk' || $this->session->userdata('adminRole') == 'Administrator')
+    {
+        redirect('error_550','refresh');
+    }
   }
 
   public function index()

@@ -1,3 +1,4 @@
+<?php $role = $this->session->userdata('adminRole'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +52,7 @@
         <a class="nav-link" href="<?php echo base_url('saldo');?>">Saldo</a>
       </li>
       <li class="nav-item px-3">
-        <a class="nav-link" href="javascript:coomingSoon()">Pinjaman</a>
+        <a class="nav-link" href="<?php echo base_url('pinjaman');?>">Pinjaman</a>
       </li>
       <li class="nav-item px-3">
         <a class="nav-link" href="<?php echo base_url('admin');?>">Admin Users</a>

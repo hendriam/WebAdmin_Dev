@@ -822,3 +822,88 @@ var mutasiList = function() {
       }
   });
 }
+
+var listDbs = function() {
+  $(document).ready(function(){
+        // Setup datatables
+        $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
+      {
+          return {
+              "iStart": oSettings._iDisplayStart,
+              "iEnd": oSettings.fnDisplayEnd(),
+              "iLength": oSettings._iDisplayLength,
+              "iTotal": oSettings.fnRecordsTotal(),
+              "iFilteredTotal": oSettings.fnRecordsDisplay(),
+              "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+              "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+          };
+      };
+
+      var table = $("#tabelListDbs").DataTable({
+          "dom": 'Zlfrtip',
+          initComplete: function() {
+              var api = this.api();
+              $('#tabelListDbs_filter input')
+                  .off('.DT')
+                  .on('input.DT', function() {
+                      api.search(this.value).draw();
+              });
+          },
+              oLanguage: {
+                "sUrl": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Indonesian.json",
+              sProcessing: "loading..."
+          },
+              processing: true,
+              serverSide: true,
+              ajax: {"url": base_url+"pinjaman/getDbsJson", "type": "POST"},
+                columns: [
+                      {"data": "group_id"},
+                      {"data": "no_telp"},
+                      {"data": "nominal", render: $.fn.dataTable.render.number(',', '.', '')},
+                      {"data": "tgl"},
+                      {"data": "view"},
+                ],
+                order: [[3, 'desc']],
+                rowCallback: function(row, data, iDisplayIndex) {
+                    var info = this.fnPagingInfo();
+                    var page = info.iPage;
+                    var length = info.iLength;
+                    $('td:eq(0)', row).html();
+                }
+
+      });
+
+      $('#tabelListDbs').on('click','.dbs_ubah',function(){
+        var id = $(this).data('id');
+        var group_id = $(this).data('group_id');
+        $.confirm({
+            title: 'Bayar',
+            content: 'Grup Loket : '+group_id,
+            buttons: {
+                confirm: function () {
+                  if(id){
+                    $.ajax({
+                        url:base_url+'pinjaman/setLunas',
+                        method:'POST',
+                        data:'id='+id,
+                        dataType:"json",
+                        success:function(datas){
+                          if(datas.msg == 'success') {
+                            $.alert(datas.print);
+                            $('#tabelListDbs').DataTable().ajax.reload();
+                          }
+                          else {
+                            $.alert(datas.print);
+                            $('#tabelListDbs').DataTable().ajax.reload();
+                          }
+                        }
+                    });
+                  }
+                },
+                cancel: function () {
+                },
+            }
+        });
+      });
+    });
+}

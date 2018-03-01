@@ -171,7 +171,6 @@ class Saldo extends CI_Controller{
       {
           echo $this->saldo_model->getDepositByNoKwitansi($no_kwitansi);
       }
-
   }
 
   public function usernameList()
@@ -181,7 +180,10 @@ class Saldo extends CI_Controller{
       $output = array();
       foreach($data as $row)
       {
+        if($row['username'] == $row['group_id'])
+        {
           $output[] = $row['username'];
+        }
       }
       echo json_encode($output);
   }

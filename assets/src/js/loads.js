@@ -126,6 +126,7 @@ function displayError(err) {
     //displayMessage(err, 'alert-danger');
 }
 
+// handle isi saldo & isi dbs
 var isGroupMaster = function(){
   var user_saldo = $('#user_saldo').val();
   var inUserSaldo = document.getElementById("user_saldo");
@@ -846,4 +847,50 @@ var auto_complete_tiket = function() {
   });
 }
 
-// =========================== open upload mutasi Menu =========================== //
+// =========================== close upload mutasi Menu =========================== //
+
+// =========================== open dbs Menu =========================== //
+
+var submitDbsForm = function(event){
+  event.preventDefault();
+  var saldo = $("#saldo_saldo").val();
+  var formData = new FormData($('#dbs_form')[0]);
+  formData.delete('saldo_saldo');
+  formData.append('saldo', saldo.split('.').join(""));
+
+  $.confirm({
+      title: 'Confirm!',
+      content: 'Submit data... ??',
+      buttons: {
+          confirm: function () {
+            if(isFormSaldoEmpty()){
+              $.ajax({
+                  url:base_url+'pinjaman/setDbs',
+                  method:'POST',
+                  data:formData,
+                  contentType:false,
+                  processData:false,
+                  dataType:"json",
+                  success:function(datas){
+                      if(datas.msg == 'failed') {
+                        $.alert(datas.print);
+                      }
+                      if(datas.msg == 'success') {
+                        $.alert(datas.print);
+                        reset();
+                      }
+                  }
+              });
+            }
+            else {
+              $.alert('salah satu form belum diisi');
+            }
+          },
+          cancel: function () {
+
+          },
+      }
+  });
+}
+
+// =========================== close dbs Menu =========================== //
