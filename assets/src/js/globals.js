@@ -49,6 +49,7 @@ var pinjaman_page = function()
   console.log('pinjaman_page_load');
   auto_complete_saldo();
   listDbs();
+  maskMoney();
 }
 
 var mutasi_page = function()

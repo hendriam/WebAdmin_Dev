@@ -171,5 +171,17 @@ class Mutasi_model extends CI_Model{
       return $query->result_array();
   }
 
+  public function autoCompareSP()
+  {
+      $query = $this->db->query("CALL AutoCompare()");
+      return $query->result_array();
+  }
+
+  public function rekonMutasiSP($username,$mutasi_id)
+  {
+      $query = $this->db->query("CALL RekonMutasi('".$username."','".$mutasi_id."')");
+      return $query->result_array();
+  }
+
 
 }

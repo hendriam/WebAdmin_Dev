@@ -139,4 +139,10 @@ class Saldo_model extends CI_Model{
       return $query->result_array();
   }
 
+  public function depositLangsung($username, $admin_id, $nominal)
+  {
+    $query = $this->db->query("CALL DepositLangsung('".$username."','".$admin_id."','".$nominal."')");
+    return $query->result_array();
+  }
+
 }

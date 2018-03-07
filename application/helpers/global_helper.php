@@ -18,6 +18,6 @@ if(!function_exists('FormatNoTrans'))
         case 4 : $NoTrans = "0".$num; break;
         default: $NoTrans = $num;
       }
-      return $NoTrans;
+      return $num;
   }
 }

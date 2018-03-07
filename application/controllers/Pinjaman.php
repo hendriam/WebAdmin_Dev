@@ -64,6 +64,24 @@ class Pinjaman extends CI_Controller{
           exit();
       }
       $user_id = $this->saldo_model->getUserByUsername($username)->row()->id;
+      // cek jika ada pinjaman
+      if($this->pinjaman_model->isPinjamanExist($user_id))
+      {
+          $output['msg'] = 'failed';
+          $output['print'] = 'Gagal, Loket masih memiliki Pinjaman !!';
+
+          echo json_encode($output);
+          exit();
+      }
+      // cek jika sudah pernah meminjam
+      if($this->pinjaman_model->isDbsExist($user_id))
+      {
+          $output['msg'] = 'failed';
+          $output['print'] = 'Gagal, DBS sebelumnya belum dibayar !!';
+
+          echo json_encode($output);
+          exit();
+      }
       $this->db->trans_start();
       // set dbs
       $arrayDbs = array(
@@ -113,6 +131,14 @@ class Pinjaman extends CI_Controller{
           $output['print'] = 'DBS berhasil dilunasi..';
           echo json_encode($output);
       }
+  }
+
+  public function tes()
+  {
+      // echo '<pre>';
+      // echo print_r($this->pinjaman_model->autoPotong('4','15000'));
+      // echo '</pre>';
+      echo $this->pinjaman_model->autoPotong('4','4000');
   }
 
 }

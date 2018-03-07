@@ -863,7 +863,7 @@ var listDbs = function() {
                       {"data": "tgl"},
                       {"data": "view"},
                 ],
-                order: [[3, 'desc']],
+                order: [[3, 'asc']],
                 rowCallback: function(row, data, iDisplayIndex) {
                     var info = this.fnPagingInfo();
                     var page = info.iPage;

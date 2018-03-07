@@ -37,4 +37,35 @@ class Pinjaman_model extends CI_Model{
       return true;
   }
 
+  public function isDbsExist($user_id)
+  {
+    $query = $this->db->get_where('inm_dbs', array('user_id' => $user_id, 'status_id' => '1'));
+    if ($query->num_rows() > 0){
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+  }
+
+  public function isPinjamanExist($user_id)
+  {
+      $query = $this->db->get_where('inm_pinjaman', array('user_id' => $user_id, 'status_id' => '1'));
+      if ($query->num_rows() > 0){
+          return true;
+      }
+      else
+      {
+          return false;
+      }
+  }
+
+  public function autoPotong($user_id, $nominal)
+  {
+    $query = $this->db->query("CALL potong_dbs('".$user_id."','".$nominal."')");
+    //return $query->result();
+    return $query->row('@amount');
+  }
+
 }

@@ -97,9 +97,13 @@ class Mutasi extends CI_Controller{
                 }
                 else
                 {
-                    $this->autoCompare();
-                    $output['title'] = 'success';
-                    $output['msg'] = 'berhasil upload file';
+                    $data = $this->mutasi_model->autoCompareSP();
+                    $output = array();
+                    foreach($data as $row)
+                    {
+                        $output['title'] = $row['@title'];
+                        $output['msg'] = $row['@msg'];
+                    }
                     echo json_encode($output);
                 }
               }
@@ -134,9 +138,7 @@ class Mutasi extends CI_Controller{
                       $output['msg'] = 'berhasil upload file';
                       echo json_encode($output);
                   }
-                  // $output['title'] = 'success';
-                  // $output['msg'] = $this->getCsvBRI($file);
-                  // echo json_encode($output);
+
               }
               if($this->input->post('bank', TRUE) == 'Bukopin')
               {
@@ -148,14 +150,15 @@ class Mutasi extends CI_Controller{
                   }
                   else
                   {
-                      $this->autoCompare();
-                      $output['title'] = 'success';
-                      $output['msg'] = 'berhasil upload file';
+                      $data = $this->mutasi_model->autoCompareSP();
+                      $output = array();
+                      foreach($data as $row)
+                      {
+                          $output['title'] = $row['@title'];
+                          $output['msg'] = $row['@msg'];
+                      }
                       echo json_encode($output);
                   }
-                  // $output['title'] = 'success';
-                  // $output['msg'] = $this->getTxtBkp($file);
-                  // echo json_encode($output);
               }
           }
       }
@@ -620,21 +623,14 @@ class Mutasi extends CI_Controller{
   }
 
   // dengan kode unik dari id loket
-  public function autoCompare()
+  public function autoCompareOld()
   {
       // ambil data mutasi
       $data = $this->mutasi_model->getAllMutasi();
       //$count = $this->mutasi_model->countAllMutasi()+1;
       // ambil 4 digit terakhir dari nominal mutasi
       foreach ($data as $key) {
-        // 0 = gagal cek mutasi
-        // 1 = id mutasi terakhir tidak dicek
 
-        // $count -= 1;
-        // if($count == 0)
-        // {
-        //   return true;
-        // }
         $last4Digit = substr($key['nominal'], -4);
         if(substr($last4Digit, -4) == '0000')
         {
@@ -678,6 +674,7 @@ class Mutasi extends CI_Controller{
       }
   }
 
+
   public function tiketList()
   {
       $match = $this->input->get('term',TRUE);
@@ -710,6 +707,21 @@ class Mutasi extends CI_Controller{
   {
       $username = $this->input->post('rekonMutasi',TRUE);
       $mutasi_id = $this->input->post('mutasi_id',TRUE);
+      $data = $this->mutasi_model->rekonMutasiSP($username,$mutasi_id);
+      $output = array();
+      foreach($data as $row)
+      {
+          $output['title'] = $row['@title'];
+          $output['msg'] = $row['@msg'];
+      }
+      echo json_encode($output);      
+  }
+
+  public function rekonMutasiOld()
+  {
+      $username = $this->input->post('rekonMutasi',TRUE);
+      $mutasi_id = $this->input->post('mutasi_id',TRUE);
+
       $user_id = $this->saldo_model->getUserIdByGroupId($username)->row('id');
 
       $this->db->trans_start();

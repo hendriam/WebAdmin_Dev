@@ -78,6 +78,34 @@ class Saldo extends CI_Controller{
 
   public function setSaldoLoket()
   {
+      $username = $this->input->post('user_saldo', TRUE);
+      $nominal = $this->input->post('saldo', TRUE);
+      $admin_id = $this->session->userdata('adminId');
+      $data = $this->saldo_model->depositLangsung($username, $admin_id, $nominal);
+      $output = array();
+      foreach($data as $row)
+      {
+          if($row['@msg'] == 'success')
+          {
+            $output['msg'] = $row['@msg'];
+            $output['no_kwitansi'] = $row['@no_kwitansi'];
+            $output['username'] = $row['@username'];
+            $output['nama_loket'] = $row['@nama_loket'];
+            $output['nominal'] = $row['@nominal'];
+            $output['terbilang'] = $row['@terbilang'];
+            $output['tanggal'] = $row['@tanggal'];
+          }
+          if($row['@msg'] == 'failed')
+          {
+            $output['msg'] = $row['@msg'];
+            $output['print'] = $row['@print'];
+          }
+      }
+      echo json_encode($output);
+  }
+
+  public function setSaldoLoketOld()
+  {
 
       $this->load->library('moneyFormat');
       $username = $this->input->post('user_saldo', TRUE);
@@ -194,6 +222,15 @@ class Saldo extends CI_Controller{
       $this->session->unset_userdata('printer');
       $this->session->set_userdata('printer', $printer_name);
   }
+
+  // public function tesFormat()
+  // {
+  //     $lastKwitansi = $this->saldo_model->getLastKwitansiNo(); // last full kwitansi number
+  //     $datePart = substr($lastKwitansi,0,8); // get date part
+  //     echo $idPart = substr($lastKwitansi, 8); // last id kwitansi number
+  //     echo "\t".FormatNoTrans($idPart);
+  //     echo "\t".strlen($idPart);
+  // }
   // public function pdf()
 	// {
   // 		$this->load->library('pdfgenerator');
