@@ -860,10 +860,9 @@ var listDbs = function() {
                       {"data": "group_id"},
                       {"data": "no_telp"},
                       {"data": "nominal", render: $.fn.dataTable.render.number(',', '.', '')},
-                      {"data": "tgl"},
-                      {"data": "view"},
+                      {"data": "tgl"}
                 ],
-                order: [[3, 'asc']],
+                order: [[1, 'asc']],
                 rowCallback: function(row, data, iDisplayIndex) {
                     var info = this.fnPagingInfo();
                     var page = info.iPage;
@@ -873,37 +872,37 @@ var listDbs = function() {
 
       });
 
-      $('#tabelListDbs').on('click','.dbs_ubah',function(){
-        var id = $(this).data('id');
-        var group_id = $(this).data('group_id');
-        $.confirm({
-            title: 'Bayar',
-            content: 'Grup Loket : '+group_id,
-            buttons: {
-                confirm: function () {
-                  if(id){
-                    $.ajax({
-                        url:base_url+'pinjaman/setLunas',
-                        method:'POST',
-                        data:'id='+id,
-                        dataType:"json",
-                        success:function(datas){
-                          if(datas.msg == 'success') {
-                            $.alert(datas.print);
-                            $('#tabelListDbs').DataTable().ajax.reload();
-                          }
-                          else {
-                            $.alert(datas.print);
-                            $('#tabelListDbs').DataTable().ajax.reload();
-                          }
-                        }
-                    });
-                  }
-                },
-                cancel: function () {
-                },
-            }
-        });
-      });
+      // $('#tabelListDbs').on('click','.dbs_ubah',function(){
+      //   var id = $(this).data('id');
+      //   var group_id = $(this).data('group_id');
+      //   $.confirm({
+      //       title: 'Bayar',
+      //       content: 'Grup Loket : '+group_id,
+      //       buttons: {
+      //           confirm: function () {
+      //             if(id){
+      //               $.ajax({
+      //                   url:base_url+'pinjaman/setLunas',
+      //                   method:'POST',
+      //                   data:'id='+id,
+      //                   dataType:"json",
+      //                   success:function(datas){
+      //                     if(datas.msg == 'success') {
+      //                       $.alert(datas.print);
+      //                       $('#tabelListDbs').DataTable().ajax.reload();
+      //                     }
+      //                     else {
+      //                       $.alert(datas.print);
+      //                       $('#tabelListDbs').DataTable().ajax.reload();
+      //                     }
+      //                   }
+      //               });
+      //             }
+      //           },
+      //           cancel: function () {
+      //           },
+      //       }
+      //   });
+      // });
     });
 }

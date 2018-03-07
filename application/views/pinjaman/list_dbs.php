@@ -4,7 +4,7 @@
       <strong>Daftar Peminjam DBS</strong>
     </div>
 
-    <div class="card-body table-responsive">
+    <div class="card-body table-responsive col-md-8">
       <table class="table table-bordered" id="tabelListDbs">
           <thead>
             <tr>
@@ -12,7 +12,6 @@
               <th>No Telp</th>
               <th>Nominal</th>
               <th>Tanggal</th>
-              <th><center>###</center></th>
             </tr>
           </thead>
         </table>

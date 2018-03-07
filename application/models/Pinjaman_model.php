@@ -22,9 +22,9 @@ class Pinjaman_model extends CI_Model{
       $this->datatables->join('inm_users', 'inm_users.id=inm_dbs.user_id');
       $this->datatables->where('inm_dbs.status_id', '1');
       $this->datatables->where('inm_dbs.admin_id', $this->session->userdata('adminId'));
-      $this->datatables->add_column('view', '<center>
-      <a href="javascript:void(0);" class="dbs_ubah btn btn-info btn-sm" data-id="$1" data-group_id="$2">Bayar</a>
-      </center>','id,group_id');
+      // $this->datatables->add_column('view', '<center>
+      // <a href="javascript:void(0);" class="dbs_ubah btn btn-info btn-sm" data-id="$1" data-group_id="$2">Bayar</a>
+      // </center>','id,group_id');
       return $this->datatables->generate();
   }
 
