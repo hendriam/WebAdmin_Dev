@@ -117,9 +117,13 @@ class Mutasi extends CI_Controller{
                   }
                   else
                   {
-                      $this->autoCompare();
-                      $output['title'] = 'success';
-                      $output['msg'] = 'berhasil upload file';
+                      $data = $this->mutasi_model->autoCompareSP();
+                      $output = array();
+                      foreach($data as $row)
+                      {
+                          $output['title'] = $row['@title'];
+                          $output['msg'] = $row['@msg'];
+                      }
                       echo json_encode($output);
                   }
               }
@@ -133,9 +137,13 @@ class Mutasi extends CI_Controller{
                   }
                   else
                   {
-                      $this->autoCompare();
-                      $output['title'] = 'success';
-                      $output['msg'] = 'berhasil upload file';
+                      $data = $this->mutasi_model->autoCompareSP();
+                      $output = array();
+                      foreach($data as $row)
+                      {
+                          $output['title'] = $row['@title'];
+                          $output['msg'] = $row['@msg'];
+                      }
                       echo json_encode($output);
                   }
 
@@ -714,7 +722,7 @@ class Mutasi extends CI_Controller{
           $output['title'] = $row['@title'];
           $output['msg'] = $row['@msg'];
       }
-      echo json_encode($output);      
+      echo json_encode($output);
   }
 
   public function rekonMutasiOld()

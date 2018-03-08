@@ -50,6 +50,7 @@ var pinjaman_page = function()
   auto_complete_saldo();
   listDbs();
   maskMoney();
+  listPinjaman();
 }
 
 var mutasi_page = function()

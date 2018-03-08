@@ -6,5 +6,11 @@
     <li class="nav-item">
       <a href="javascript:getPagePinjaman('list')" class="nav-link">Daftar DBS</a>
     </li>
+    <li class="nav-item">
+      <a href="javascript:getPagePinjaman('isi_p')" class="nav-link">Isi Pinjaman</a>
+    </li>
+    <li class="nav-item">
+      <a href="javascript:getPagePinjaman('list_p')" class="nav-link">Daftar Pinjaman</a>
+    </li>
   </ul>
 </div>

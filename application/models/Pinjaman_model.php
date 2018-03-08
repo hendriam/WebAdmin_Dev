@@ -28,6 +28,15 @@ class Pinjaman_model extends CI_Model{
       return $this->datatables->generate();
   }
 
+  public function getListPinjaman()
+  {
+      $this->datatables->select('inm_users.group_id,inm_users.no_telp,inm_pinjaman.nominal,inm_pinjaman.tgl_create as tgl,inm_pinjaman.id,inm_pinjaman.user_id');
+      $this->datatables->from('inm_pinjaman');
+      $this->datatables->join('inm_users', 'inm_users.id=inm_pinjaman.user_id');
+      $this->datatables->where('inm_pinjaman.status_id', '1');
+      return $this->datatables->generate();
+  }
+
   public function ubahStatus($id)
   {
       $this->db->set('status_id', '2');
@@ -66,6 +75,12 @@ class Pinjaman_model extends CI_Model{
     $query = $this->db->query("CALL potong_dbs('".$user_id."','".$nominal."')");
     //return $query->result();
     return $query->row('@amount');
+  }
+
+  public function setPinjamanSP($username, $nominal, $admin_id)
+  {
+      $query = $this->db->query("CALL SetPinjaman('".$username."','".$nominal."','".$admin_id."')");
+      return $query->result_array();
   }
 
 }

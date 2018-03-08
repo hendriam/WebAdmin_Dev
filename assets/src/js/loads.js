@@ -894,3 +894,47 @@ var submitDbsForm = function(event){
 }
 
 // =========================== close dbs Menu =========================== //
+
+// =========================== open pinjaman Menu =========================== //
+var submitPinjamanForm = function(event){
+  event.preventDefault();
+  var saldo = $("#saldo_saldo").val();
+  var formData = new FormData($('#pinjaman_form')[0]);
+  formData.delete('saldo_saldo');
+  formData.append('saldo', saldo.split('.').join(""));
+
+  $.confirm({
+      title: 'Confirm!',
+      content: 'Submit data... ??',
+      buttons: {
+          confirm: function () {
+            if(isFormSaldoEmpty()){
+              $.ajax({
+                  url:base_url+'pinjaman/setPinjaman',
+                  method:'POST',
+                  data:formData,
+                  contentType:false,
+                  processData:false,
+                  dataType:"json",
+                  success:function(datas){
+                      if(datas.msg == 'failed') {
+                        $.alert(datas.print);
+                      }
+                      if(datas.msg == 'success') {
+                        $.alert(datas.print);
+                        reset();
+                      }
+                  }
+              });
+            }
+            else {
+              $.alert('salah satu form belum diisi');
+            }
+          },
+          cancel: function () {
+
+          },
+      }
+  });
+}
+// =========================== close pinjaman Menu =========================== //

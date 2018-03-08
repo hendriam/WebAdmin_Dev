@@ -862,7 +862,7 @@ var listDbs = function() {
                       {"data": "nominal", render: $.fn.dataTable.render.number(',', '.', '')},
                       {"data": "tgl"}
                 ],
-                order: [[1, 'asc']],
+                order: [[3, 'asc']],
                 rowCallback: function(row, data, iDisplayIndex) {
                     var info = this.fnPagingInfo();
                     var page = info.iPage;
@@ -904,5 +904,56 @@ var listDbs = function() {
       //       }
       //   });
       // });
+    });
+}
+
+var listPinjaman = function() {
+  $(document).ready(function(){
+        // Setup datatables
+        $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings)
+      {
+          return {
+              "iStart": oSettings._iDisplayStart,
+              "iEnd": oSettings.fnDisplayEnd(),
+              "iLength": oSettings._iDisplayLength,
+              "iTotal": oSettings.fnRecordsTotal(),
+              "iFilteredTotal": oSettings.fnRecordsDisplay(),
+              "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+              "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+          };
+      };
+
+      var table = $("#tabelListPinjaman").DataTable({
+          "dom": 'Zlfrtip',
+          initComplete: function() {
+              var api = this.api();
+              $('#tabelListPinjaman_filter input')
+                  .off('.DT')
+                  .on('input.DT', function() {
+                      api.search(this.value).draw();
+              });
+          },
+              oLanguage: {
+                "sUrl": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Indonesian.json",
+              sProcessing: "loading..."
+          },
+              processing: true,
+              serverSide: true,
+              ajax: {"url": base_url+"pinjaman/getPinjamanJson", "type": "POST"},
+                columns: [
+                      {"data": "group_id"},
+                      {"data": "no_telp"},
+                      {"data": "nominal", render: $.fn.dataTable.render.number(',', '.', '')},
+                      {"data": "tgl"}
+                ],
+                order: [[3, 'asc']],
+                rowCallback: function(row, data, iDisplayIndex) {
+                    var info = this.fnPagingInfo();
+                    var page = info.iPage;
+                    var length = info.iLength;
+                    $('td:eq(0)', row).html();
+                }
+
+      });
     });
 }

@@ -78,6 +78,8 @@ $route['mutasi/list']                   = 'Mutasi/listPage';
 $route['pinjaman']                      = 'Pinjaman/index';
 $route['pinjaman/isi']                  = 'Pinjaman/isiDbsPage';
 $route['pinjaman/list']                 = 'Pinjaman/listDbsPage';
+$route['pinjaman/isi_p']                = 'Pinjaman/isiPinjamanPage';
+$route['pinjaman/list_p']               = 'Pinjaman/listPinjamanPage';
 
 $route['error_550']                     = 'Error';
 

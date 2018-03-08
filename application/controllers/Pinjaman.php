@@ -41,6 +41,16 @@ class Pinjaman extends CI_Controller{
       $this->load->view('pinjaman/list_dbs');
   }
 
+  public function isiPinjamanPage()
+  {
+      $this->load->view('pinjaman/isi_pinjaman');
+  }
+
+  public function listPinjamanPage()
+  {
+    $this->load->view('pinjaman/list_pinjaman');
+  }
+
   public function setDbs()
   {
       $this->form_validation->set_rules('user_saldo', 'Username', 'trim|required|min_length[8]|max_length[20]');
@@ -115,11 +125,43 @@ class Pinjaman extends CI_Controller{
       }
   }
 
+  public function setPinjaman()
+  {
+      $this->form_validation->set_rules('user_saldo', 'Username', 'trim|required|min_length[8]|max_length[20]');
+      $this->form_validation->set_rules('saldo', 'Saldo', 'trim|max_length[10]');
+      if($this->form_validation->run() == FALSE)
+      {
+          $output['msg'] = 'failed';
+          $output['print'] = validation_errors();
+          echo json_encode($output);
+          exit();
+      }
+      $username = $this->input->post('user_saldo', TRUE);
+      $nominal = $this->input->post('saldo', TRUE);
+      $admin_id = $this->session->userdata('adminId');
+
+      $data = $this->pinjaman_model->setPinjamanSP($username, $nominal, $admin_id);
+      $output = array();
+      foreach($data as $row)
+      {
+          $output['msg'] = $row['@msg'];
+          $output['print'] = $row['@print'];
+      }
+      echo json_encode($output);
+  }
+
   public function getDbsJson()
   {
       //data user by JSON object
       header('Content-Type: application/json');
       echo $this->pinjaman_model->getListDBS();
+  }
+
+  public function getPinjamanJson()
+  {
+      //data user by JSON object
+      header('Content-Type: application/json');
+      echo $this->pinjaman_model->getListPinjaman();
   }
 
   public function setLunas()
